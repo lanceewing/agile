@@ -61,6 +61,7 @@ namespace AGILE
             this.lastTime = stopWatch.Elapsed;
             this.deltaTime = TimeSpan.Zero;
 
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Show();
             this.Activate();
         }
