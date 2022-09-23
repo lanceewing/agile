@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace AGILE
@@ -13,23 +14,55 @@ namespace AGILE
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\AGIStudio138b1\\savegame")));
-            Application.Run(new AgileForm(new AGI.Game("C:\\games\\kq1")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\kq2")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\kq3")));
-            //Application.Run(new AgileForm(n/ew AGI.Game("E:\\games\\sq1")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\sq2")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\pq1")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\mumg")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\ddp")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\bc")));
-            //Application.Run(new AgileForm(new AGI.Game("C:\\games\\ruby")));
 
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\gr")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\kq4agi")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\mh")));
-            //Application.Run(new AgileForm(new AGI.Game("E:\\games\\mh2")));
+            // Start by attempting to run with the current folder.
+            Boolean stillChoosingGame = true, firstTime = true;
+            string gameFolder = Directory.GetCurrentDirectory();
+            AGI.Game game = null;
 
+            while (stillChoosingGame)
+            {
+                try
+                {
+                    game = new AGI.Game(gameFolder);
+                    stillChoosingGame = false;
+                }
+                catch (Exception e)
+                {
+                    // There isn't an AGI game in the current folder, so ask player to choose a different folder.
+                    using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                    {
+                        folderDialog.Description = "Choose a folder containing an AGI game...";
+                        folderDialog.ShowNewFolderButton = false;
+                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+
+                        if (!firstTime)
+                        {
+                            folderDialog.SelectedPath = gameFolder;
+                        }
+
+                        // Tiny hack here to force the Folder Selection dialog to the front. It needs to be associated with a window.
+                        using (var dummyForm = new Form() { TopMost = true })
+                        {
+                            DialogResult result = folderDialog.ShowDialog(Control.FromHandle(dummyForm.Handle));
+                            if (result == DialogResult.OK)
+                            {
+                                gameFolder = folderDialog.SelectedPath;
+                                firstTime = false;
+                            }
+                            else if (result == DialogResult.Cancel)
+                            {
+                                Environment.Exit(0);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (game != null)
+            {
+                Application.Run(new AgileForm(new AGI.Game(gameFolder)));
+            }
         }
     }
 }

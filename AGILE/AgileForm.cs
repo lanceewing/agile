@@ -60,6 +60,9 @@ namespace AGILE
             this.stopWatch = Stopwatch.StartNew();
             this.lastTime = stopWatch.Elapsed;
             this.deltaTime = TimeSpan.Zero;
+
+            this.Show();
+            this.Activate();
         }
 
         /// <summary>
