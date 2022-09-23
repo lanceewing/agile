@@ -32,14 +32,17 @@ namespace AGILE
                     // There isn't an AGI game in the current folder, so ask player to choose a different folder.
                     using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                     {
-                        folderDialog.Description = "Choose a folder containing an AGI game...";
-                        folderDialog.ShowNewFolderButton = false;
-                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                        string prompt = "Please choose a folder containing an AGI game.";
 
                         if (!firstTime)
                         {
+                            prompt = $"No AGI game was found in {gameFolder}\n\n{prompt}"; 
                             folderDialog.SelectedPath = gameFolder;
                         }
+
+                        folderDialog.ShowNewFolderButton = false;
+                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                        folderDialog.Description = prompt;
 
                         // Tiny hack here to force the Folder Selection dialog to the front. It needs to be associated with a window.
                         using (var dummyForm = new Form() { TopMost = true })
