@@ -27,7 +27,7 @@ namespace AGILE
                     game = new AGI.Game(gameFolder);
                     stillChoosingGame = false;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // There isn't an AGI game in the current folder, so ask player to choose a different folder.
                     using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())

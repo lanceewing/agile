@@ -274,14 +274,14 @@ namespace AGILE
                 }
                 savedGameFile.Close();
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 // There is no saved game file of this name, so return false.
                 theGame.Description = "";
                 theGame.Exists = false;
                 return theGame;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Something unexpected happened. Bad file I guess. Return false.
                 theGame.Description = "";
@@ -705,7 +705,7 @@ namespace AGILE
                     savedGameFile.Write(savedGameData, 0, pos);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 this.textGraphics.Print("Error in saving game.\nPress ENTER to continue.");
             }
