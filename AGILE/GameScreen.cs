@@ -52,6 +52,7 @@ namespace AGILE
                 {
                     // Makes the pixels crisp and clear as we'd have seen them in the old low res screens.
                     pe.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                    pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
                     base.OnPaint(pe);
                 }
                 finally
