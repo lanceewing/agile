@@ -27,7 +27,7 @@ namespace AGILE
         private TimeSpan targetElaspedTime = TimeSpan.FromTicks(166667);
 
         /// <summary>
-        /// Constructor for MekaForm.
+        /// Constructor for AgileForm.
         /// </summary>
         /// <param name="game">The Game from which we'll get all of the game data.</param>
         public AgileForm(Game game)
@@ -43,11 +43,9 @@ namespace AGILE
             this.FormClosing += AgileForm_Closing;
 
             // Update title with version and game name.
+            Detection gameDetection = new Detection(game);
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            DateTime buildDate = new DateTime(2000, 1, 1)
-                .AddDays(appVersion.Build)
-                .AddSeconds(appVersion.Revision * 2);
-            this.Text = "AGILE v" + appVersion.Major + "." + appVersion.Minor + "." + appVersion.Build + "." + appVersion.Revision + " (" + buildDate.ToShortDateString() + ")";
+            this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
 
             // Create the AGI screen and add to the Form.
             this.screen = new GameScreen();

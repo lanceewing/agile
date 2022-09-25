@@ -65,6 +65,7 @@
     <Compile Include="AnimatedObject.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Defines.cs" />
+    <Compile Include="Detection.cs" />
     <Compile Include="GameScreen.cs">
       <SubType>Component</SubType>
     </Compile>
