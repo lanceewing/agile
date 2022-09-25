@@ -10,14 +10,14 @@ namespace AGILE
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Start by attempting to run with the current folder.
+            // Start by attempting to run with command line argument or the current folder.
             Boolean stillChoosingGame = true, firstTime = true;
-            string gameFolder = Directory.GetCurrentDirectory();
+            string gameFolder = (args.Length > 0? args[0] : Directory.GetCurrentDirectory());
             AGI.Game game = null;
 
             while (stillChoosingGame)
