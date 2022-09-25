@@ -834,7 +834,7 @@ namespace AGILE
                     {
                         case 'v':
                             num = NumberFromString(str, ref i);
-                            if (str[i + 1] == '|')
+                            if ((i < (str.Length - 1)) && (str[i + 1] == '|'))
                             {
                                 i += 2;
                                 width = NumberFromString(str, ref i);
