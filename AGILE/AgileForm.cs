@@ -21,6 +21,9 @@ namespace AGILE
         private TimeSpan lastTime;
         private TimeSpan deltaTime;
 
+        private Boolean fullScreen = false;
+        private FormWindowState windowStateBeforeFullscreen;
+
         /// <summary>
         /// The number of TimeSpan Ticks to achieve 60 times a second.
         /// </summary>
@@ -41,6 +44,7 @@ namespace AGILE
             this.KeyUp += (s, e) => userInput.KeyUp(e);
             this.KeyPress += (s, e) => userInput.KeyPressed(e);
             this.FormClosing += AgileForm_Closing;
+            this.KeyDown += AgileForm_KeyDown;
 
             // Update title with version and game name.
             Detection gameDetection = new Detection(game);
@@ -79,6 +83,41 @@ namespace AGILE
         public void AgileForm_Closing(object sender, CancelEventArgs e)
         {
             interpreter.StopSound();
+        }
+
+        /// <summary>
+        /// Invoked on key down events. Allows the windows form itself to do something in 
+        /// response to a key event rather than the AGI Interpreter.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AgileForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.F11)
+            {
+                ToggleFullscreen();
+            }
+        }
+
+        /// <summary>
+        /// Toggles full screen mode.
+        /// </summary>
+        private void ToggleFullscreen()
+        {
+            if (this.fullScreen)
+            {
+                this.FormBorderStyle = FormBorderStyle.Sizable;
+                this.WindowState = this.windowStateBeforeFullscreen;
+            }
+            else
+            {
+                this.windowStateBeforeFullscreen = this.WindowState;
+                this.WindowState = FormWindowState.Normal;
+                this.FormBorderStyle = FormBorderStyle.None;
+                this.WindowState = FormWindowState.Maximized;
+            }
+
+            this.fullScreen = !this.fullScreen;
         }
 
         /// <summary>
