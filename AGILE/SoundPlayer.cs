@@ -90,7 +90,7 @@ namespace AGILE
                     if (voice1NoteNum < voice1Notes.Count)
                     {
                         Note note = voice1Notes[voice1NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.Encode();
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -108,7 +108,7 @@ namespace AGILE
                     if (voice2NoteNum < voice2Notes.Count)
                     {
                         Note note = voice2Notes[voice2NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.Encode();
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -126,7 +126,7 @@ namespace AGILE
                     if (voice3NoteNum < voice3Notes.Count)
                     {
                         Note note = voice3Notes[voice3NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.Encode();
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -144,7 +144,7 @@ namespace AGILE
                     if (voice4NoteNum < voice4Notes.Count)
                     {
                         Note note = voice4Notes[voice4NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.Encode();
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
