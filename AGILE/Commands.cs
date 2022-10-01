@@ -390,7 +390,11 @@ namespace AGILE
                     case ScriptBufferEventType.LoadSound:
                         {
                             Sound sound = state.Sounds[scriptBufferEvent.resourceNumber];
-                            if (sound != null) sound.IsLoaded = true;
+                            if (sound != null)
+                            {
+                                soundPlayer.LoadSound(sound);
+                                sound.IsLoaded = true;
+                            }
                         }
                         break;
 
@@ -600,8 +604,6 @@ namespace AGILE
             // Normally the next Action will be the next one in the Actions list, but this
             // can be overwritten by the If and Goto actions.
             int nextActionNum = action.Logic.AddressToActionIndex[action.Address] + 1;
-
-            // TODO: Remove: Debug.WriteLine(action.Logic.Index + ": " + action.ActionNumber + " (" + action.ActionNumber + "): " + action.Operation.Name);
 
             switch (action.Operation.Opcode)
             {
@@ -1416,9 +1418,11 @@ namespace AGILE
                     {
                         // All sounds are already loaded in this interpreter, so nothing to do as such
                         // other than to remember it was "loaded".
-                        Sound sound = state.Sounds[action.Operands[0].asByte()];
+                        int soundNum = action.Operands[0].asByte();
+                        Sound sound = state.Sounds[soundNum];
                         if ((sound != null) && !sound.IsLoaded)
                         {
+                            soundPlayer.LoadSound(sound);
                             sound.IsLoaded = true;
                             state.ScriptBuffer.AddScript(ScriptBuffer.ScriptBufferEventType.LoadSound, sound.Index);
                         }
@@ -1430,7 +1434,7 @@ namespace AGILE
                         int soundNum = action.Operands[0].asByte();
                         int endFlag = action.Operands[1].asByte();
                         state.Flags[endFlag] = false;
-                        Sound sound = state.Sounds[action.Operands[0].asByte()];
+                        Sound sound = state.Sounds[soundNum];
                         if ((sound != null) && (sound.IsLoaded))
                         {
                             this.soundPlayer.PlaySound(sound, endFlag);
@@ -1635,6 +1639,7 @@ namespace AGILE
                     {
                         if (savedGames.RestoreGameState())
                         {
+                            soundPlayer.ClearCache();
                             soundPlayer.StopSound();
                             menu.EnableAllMenus();
                             ReplayScriptEvents();
@@ -1655,6 +1660,7 @@ namespace AGILE
                     {
                         if (state.Flags[Defines.NO_PRMPT_RSTRT] || textGraphics.WindowPrint("Press ENTER to restart\nthe game.\n\nPress ESC to continue\nthis game."))
                         {
+                            soundPlayer.ClearCache();
                             soundPlayer.StopSound();
                             state.Init();
                             state.Flags[Defines.RESTART] = true;
@@ -1719,6 +1725,7 @@ namespace AGILE
 
                 case 136: // pause
                     {
+                        // TODO: What happens when the game is unpaused? Should the sound continue playing?
                         soundPlayer.StopSound();
                         this.textGraphics.Print("      Game paused.\nPress Enter to continue.");
                     }

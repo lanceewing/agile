@@ -234,6 +234,7 @@ namespace AGILE
 
             // Turn off sound.
             soundPlayer.StopSound();
+            soundPlayer.ClearCache();
 
             // Clear the script event buffer ready for next room.
             state.ScriptBuffer.InitScript();
