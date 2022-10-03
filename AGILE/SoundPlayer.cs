@@ -1,12 +1,10 @@
-﻿using CSCore;
-using CSCore.SoundOut;
-using NAudio.Wave;
+﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using static AGI.Resource;
 using static AGI.Resource.Sound;
-using WaveFileReader = CSCore.Codecs.WAV.WaveFileReader;
 
 namespace AGILE
 {
@@ -16,11 +14,6 @@ namespace AGILE
     class SoundPlayer
     {
         private const int SAMPLE_RATE = 44100;
-
-        /// <summary>
-        /// The SN76489 PSG that will play the musical notes.
-        /// </summary>
-        private SN76489 psg;
 
         /// <summary>
         /// The GameState class holds all of the data and state for the Game currently 
@@ -34,9 +27,24 @@ namespace AGILE
         private Thread playerThread;
 
         /// <summary>
+        /// A cache of the generated WAVE data for loaded sounds.
+        /// </summary>
+        public Dictionary<int, byte[]> SoundCache { get; }
+
+        /// <summary>
         /// The number of the Sound resource currently playing, or -1 if none should be playing.
         /// </summary>
         private int soundNumPlaying;
+
+        /// <summary>
+        /// NAudio output device that we play the generated WAVE data with.
+        /// </summary>
+        private readonly IWavePlayer outputDevice;
+
+        /// <summary>
+        /// NAudio ISampleProvider that mixes multiple sounds together.
+        /// </summary>
+        private readonly MixingSampleProvider mixer;
 
         /// <summary>
         /// Constructor for SoundPlayer.
@@ -44,17 +52,24 @@ namespace AGILE
         /// <param name="state"></param>
         public SoundPlayer(GameState state)
         {
-            psg = new SN76489();
             this.state = state;
+            this.SoundCache = new Dictionary<int, byte[]>();
             this.soundNumPlaying = -1;
+
+            // Set up the NAudio mixer. Using a single WaveOutEvent instance, and associated mixer eliminates
+            // delays caused by creation of a WaveOutEvent per sound.
+            this.outputDevice = new WaveOutEvent();
+            this.mixer = new MixingSampleProvider(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(SAMPLE_RATE, 2));
+            this.mixer.ReadFully = true;
+            this.outputDevice.Init(mixer);
+            this.outputDevice.Play();
         }
 
         /// <summary>
-        /// Plays the given AGI Sound.
+        /// Loads and generates an AGI Sound, caching it in a ready to play state.
         /// </summary>
-        /// <param name="sound">The AGI Sound to play.</param>
-        /// <param name="endFlag">The flag to set when the sound ends.</param>
-        public void PlaySound(Sound sound, int endFlag)
+        /// <param name="sound">The AGI Sound to load.</param>
+        public void LoadSound(Sound sound)
         {
             bool voice1Playing = true;
             bool voice2Playing = true;
@@ -72,15 +87,12 @@ namespace AGILE
             int voice2NoteNum = 0;
             int voice3NoteNum = 0;
             int voice4NoteNum = 0;
+
             int samplesPerDurationUnit = SAMPLE_RATE / 60;
-            int[] bufferData = new int[2];
             MemoryStream sampleStream = new MemoryStream();
 
-            // If the same sound is already playing, exit immediately.
-            if (soundNumPlaying == sound.Index) return;
-
-            // Stop any currently playing sound.
-            StopSound();
+            // Create a new PSG for each sound, to guarantee a clean state.
+            SN76496 psg = new SN76496();
 
             // Start by converting the Notes into samples.
             while (voice1Playing || voice2Playing || voice3Playing || voice4Playing)
@@ -90,7 +102,7 @@ namespace AGILE
                     if (voice1NoteNum < voice1Notes.Count)
                     {
                         Note note = voice1Notes[voice1NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.rawData;
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -108,7 +120,7 @@ namespace AGILE
                     if (voice2NoteNum < voice2Notes.Count)
                     {
                         Note note = voice2Notes[voice2NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.rawData;
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -126,7 +138,7 @@ namespace AGILE
                     if (voice3NoteNum < voice3Notes.Count)
                     {
                         Note note = voice3Notes[voice3NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.rawData;
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -144,7 +156,7 @@ namespace AGILE
                     if (voice4NoteNum < voice4Notes.Count)
                     {
                         Note note = voice4Notes[voice4NoteNum++];
-                        int[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.Encode();
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
@@ -157,22 +169,44 @@ namespace AGILE
                     }
                 }
 
-                // Use the SN76489 PSG emulation to generate the sample data.
-                short sample = (short)(psg.render() * 8000);
+                // Use the SN76496 PSG emulation to generate the sample data.
+                short sample = (short)(psg.render());
+
                 sampleStream.WriteByte((byte)(sample & 0xFF));
                 sampleStream.WriteByte((byte)((sample >> 8) & 0xFF));
                 sampleStream.WriteByte((byte)(sample & 0xFF));
                 sampleStream.WriteByte((byte)((sample >> 8) & 0xFF));
             }
 
-            // Use the samples to create a Wave file.
-            // TODO: We could cache the created Wave data for the duration of the room. Sometimes rooms play the same sound over and over, e.g. The Ruby Cast :-)
+            // Use the samples to create a Wave file. These can be several MB in size (e.g. 5MB, 8MB, 10MB)
             byte[] waveData = CreateWave(sampleStream.ToArray());
-            MemoryStream waveStream = new MemoryStream(waveData);
 
-            // Now play the Wave file.
-            playerThread = new Thread(() => PlayWaveStreamAndWait(waveStream, sound.Index, endFlag));
-            playerThread.Start();
+            // Cache for use when the sound is played. This reduces overhead of generating WAV on every play.
+            this.SoundCache.Add(sound.Index, waveData);
+        }
+
+        /// <summary>
+        /// Plays the given AGI Sound.
+        /// </summary>
+        /// <param name="sound">The AGI Sound to play.</param>
+        /// <param name="endFlag">The flag to set when the sound ends.</param>
+        public void PlaySound(Sound sound, int endFlag)
+        {
+            // Stop any currently playing sound. Will set the end flag for the previous sound.
+            StopSound(false);
+
+            // Set the starting state of the sound end flag to false.
+            state.Flags[endFlag] = false;
+
+            // Get WAV data from the cache.
+            byte[] waveData = null;
+            if (this.SoundCache.TryGetValue(sound.Index, out waveData))
+            {
+                // Now play the Wave file.
+                MemoryStream memoryStream = new MemoryStream(waveData);
+                playerThread = new Thread(() => PlayWaveStreamAndWait(memoryStream, sound.Index, endFlag));
+                playerThread.Start();
+            }
         }
 
         /// <summary>
@@ -181,10 +215,13 @@ namespace AGILE
         /// <param name="waveStream">The MemoryStream containing the Wave file data to play.</param>
         private void PlayWaveStreamAndWait(MemoryStream waveStream, int soundNum, int endFlag)
         {
-            soundNumPlaying = soundNum;
-            //PlayWithSoundPlayer(waveStream);
-            PlayWithCSCore(waveStream);
-            //PlayWithNAudio(waveStream);
+            if (this.state.Flags[Defines.SOUNDON])
+            {
+                soundNumPlaying = soundNum;
+                PlayWithNAudioMix(waveStream);
+            }
+
+            // The above call blocks until the sound has finished playing. If sound is not on, then it happens immediately.
             soundNumPlaying = -1;
             state.Flags[endFlag] = true;
         }
@@ -231,189 +268,144 @@ namespace AGILE
         /// Plays the WAVE file data contained in the given MemoryStream using the NAudio library.
         /// </summary>
         /// <param name="memoryStream">The MemoryStream containing the WAVE file data.</param>
-        public void PlayWithNAudio(MemoryStream memoryStream)
+        public void PlayWithNAudioMix(MemoryStream memoryStream)
         {
+            // Add the new sound as an input to the NAudio mixer.
             RawSourceWaveStream rs = new RawSourceWaveStream(memoryStream, new NAudio.Wave.WaveFormat(44100, 16, 2));
-            WaveOutEvent wo = new WaveOutEvent();
-            wo.Init(rs);
-            wo.Play();
-            while ((wo.PlaybackState == NAudio.Wave.PlaybackState.Playing) && (soundNumPlaying >= 0))
+            ISampleProvider soundMixerInput = rs.ToSampleProvider();
+            mixer.AddMixerInput(soundMixerInput);
+
+            // Register a handler for when this specific sound ends.
+            bool playbackEnded = false;
+            void handlePlaybackEnded(object sender, SampleProviderEventArgs args)
+            {
+                // It is possible that we get sound overlaps, so we check that this is the same sound.
+                if (System.Object.ReferenceEquals(args.SampleProvider, soundMixerInput))
+                {
+                    mixer.MixerInputEnded -= handlePlaybackEnded;
+                    playbackEnded = true;
+                }
+            };
+            mixer.MixerInputEnded += handlePlaybackEnded;
+
+            // Wait until either the sound has ended, or we have been told to stop.
+            while (!playbackEnded && (soundNumPlaying >= 0))
             {
                 Thread.Sleep(50);
             }
-            wo.Dispose();
-        }
 
-        /// <summary>
-        /// Plays the WAVE file data contained in the given MemoryStream using the CSCore library.
-        /// </summary>
-        /// <param name="memoryStream">The MemoryStream containing the WAVE file data.</param>
-        public void PlayWithCSCore(MemoryStream memoryStream)
-        {
-            using (IWaveSource soundSource = new WaveFileReader(memoryStream))
+            // If we didn't stop due to the playback ending, then tell it to stop playing.
+            if (!playbackEnded)
             {
-                //SoundOut implementation which plays the sound
-                // WaveOut works. DirectSoundOut works. WasapiOut  works.
-                using (ISoundOut soundOut = new CSCore.SoundOut.WasapiOut())
-                {
-                    //Tell the SoundOut which sound it has to play
-                    soundOut.Initialize(soundSource);
-                    //Play the sound
-                    soundOut.Play();
-
-                    while ((soundOut.PlaybackState == CSCore.SoundOut.PlaybackState.Playing) && (soundNumPlaying >= 0))
-                    {
-                        Thread.Sleep(10);
-                    }
-
-                    //Stop the playback
-                    soundOut.Stop();
-                }
+                mixer.RemoveMixerInput(soundMixerInput);
             }
         }
 
         /// <summary>
-        /// Plays the WAVE file data contained in the given MemoryStream using the System.Media.SoundPlayer.
+        /// Resets the internal state of the SoundPlayer.
         /// </summary>
-        /// <param name="memoryStream">The MemoryStream containing the WAVE file data.</param>
-        public void PlayWithSoundPlayer(MemoryStream memoryStream)
+        public void Reset()
         {
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer(memoryStream);
-            player.Stream.Seek(0, SeekOrigin.Begin);
-            player.PlaySync();
-            // TODO: Doesn't support stopping the sound part way through.
-            player.Dispose();
-            memoryStream.Dispose();
+            StopSound();
+            SoundCache.Clear();
+            mixer.RemoveAllMixerInputs();
         }
 
         /// <summary>
-        /// Stops the currently playing sound.
+        /// Fully shuts down the SoundPlayer. Only intended for when AGILE is closing down.
         /// </summary>
-        public void StopSound()
+        public void Shutdown()
         {
-            if ((playerThread != null) && (soundNumPlaying >= 0))
+            Reset();
+            outputDevice.Stop();
+            outputDevice.Dispose();
+        }
+
+        /// <summary>
+        /// Stops the currently playing sound
+        /// </summary>
+        /// <param name="wait">true to wait for the player thread to stop; otherwise false to not wait.</param>
+        public void StopSound(bool wait = true)
+        {
+            if (soundNumPlaying >= 0)
             {
+                // This tells the thread to stop.
                 soundNumPlaying = -1;
 
-                while (playerThread.ThreadState != ThreadState.Stopped)
+                if (playerThread != null)
                 {
-                    soundNumPlaying = -1;
-                    Thread.Sleep(10);
+                    // We wait for the thread to stop only if instructed to do so.
+                    if (wait)
+                    {
+                        while (playerThread.ThreadState != ThreadState.Stopped)
+                        {
+                            soundNumPlaying = -1;
+                            Thread.Sleep(10);
+                        }
+                    }
+
+                    playerThread = null;
                 }
             }
         }
 
         /// <summary>
-        /// SN76489 is the audio chip used in the IBM PC Jr and therefore what the original AGI sound format was designed for.
-        /// 
-        /// This code is ported from Shiru's AS3 VGM player http://shiru.untergrund.net/. Ported to C# by superjoebob.
+        /// SN76496 is the audio chip used in the IBM PC JR and therefore what the original AGI sound format was designed for.
         /// </summary>
-        public sealed class SN76489
+        public sealed class SN76496
         {
+            private const float IBM_PCJR_CLOCK = 3579545f;
+
             private static float[] volumeTable = new float[] {
-                0.25f,0.2442f,0.1940f,0.1541f,0.1224f,0.0972f,0.0772f,0.0613f,0.0487f,0.0386f,0.0307f,0.0244f,0.0193f,0.0154f,0.0122f,0,
-                -0.25f,-0.2442f,-0.1940f,-0.1541f,-0.1224f,-0.0972f,-0.0772f,-0.0613f,-0.0487f,-0.0386f,-0.0307f,-0.0244f,-0.0193f,-0.0154f,-0.0122f,0,
-                0.25f,0.2442f,0.1940f,0.1541f,0.1224f,0.0972f,0.0772f,0.0613f,0.0487f,0.0386f,0.0307f,0.0244f,0.0193f,0.0154f,0.0122f,0,
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+                8191.5f,
+                6506.73973474395f,
+                5168.4870873095f,
+                4105.4752242578f,
+                3261.09488758897f,
+                2590.37974532693f,
+                2057.61177037107f,
+                1634.41912530676f,
+                1298.26525860452f,
+                1031.24875107119f,
+                819.15f,
+                650.673973474395f,
+                516.84870873095f,
+                410.54752242578f,
+                326.109488758897f,
+                0.0f
+            };
 
-            private uint volA;
-            private uint volB;
-            private uint volC;
-            private uint volD;
-            private int divA;
-            private int divB;
-            private int divC;
-            private int divD;
-            private int cntA;
-            private int cntB;
-            private int cntC;
-            private int cntD;
-            private float outA;
-            private float outB;
-            private float outC;
-            private float outD;
-            private uint noiseLFSR;
-            private uint noiseTap;
-            private uint latchedChan;
-            private bool latchedVolume;
-
+            private int[] channelVolume = new int[4] { 15, 15, 15, 15 };
+            private int[] channelCounterReload = new int[4];
+            private int[] channelCounter = new int[4];
+            private int[] channelOutput = new int[4];
+            private uint lfsr;
+            private uint latchedChannel;
+            private bool updateVolume;
             private float ticksPerSample;
             private float ticksCount;
 
-            public SN76489()
+            public SN76496()
             {
-                clock(3500000);
-                reset();
-            }
-
-            public void clock(float f)
-            {
-                ticksPerSample = f / 16 / 44100;
-            }
-
-            public void reset()
-            {
-                volA = 15;
-                volB = 15;
-                volC = 15;
-                volD = 15;
-                outA = 0;
-                outB = 0;
-                outC = 0;
-                outD = 0;
-                latchedChan = 0;
-                latchedVolume = false;
-                noiseLFSR = 0x8000;
+                ticksPerSample = IBM_PCJR_CLOCK / 16 / SAMPLE_RATE;
                 ticksCount = ticksPerSample;
+                latchedChannel = 0;
+                updateVolume = false;
+                lfsr = 0x4000;
             }
 
-            public uint getDivByNumber(uint chan)
+            public void setVolByNumber(uint channel, uint volume)
             {
-                switch (chan)
+                switch (channel)
                 {
-                    case 0: return (uint)divA;
-                    case 1: return (uint)divB;
-                    case 2: return (uint)divC;
-                    case 3: return (uint)divD;
-                }
-                return 0;
-            }
-
-            public void setDivByNumber(uint chan, uint div)
-            {
-                switch (chan)
-                {
-                    case 0: divA = (int)div; break;
-                    case 1: divB = (int)div; break;
-                    case 2: divC = (int)div; break;
-                    case 3: divD = (int)div; break;
+                    case 0: channelVolume[0] = (int)(volume & 0x0F); break;
+                    case 1: channelVolume[1] = (int)(volume & 0x0F); break;
+                    case 2: channelVolume[2] = (int)(volume & 0x0F); break;
+                    case 3: channelVolume[3] = (int)(volume & 0x0F); break;
                 }
             }
 
-            public uint getVolByNumber(uint chan)
-            {
-                switch (chan)
-                {
-                    case 0: return volA;
-                    case 1: return volB;
-                    case 2: return volC;
-                    case 3: return volD;
-                }
-                return 0;
-            }
-
-            public void setVolByNumber(uint chan, uint vol)
-            {
-                switch (chan)
-                {
-                    case 0: volA = vol; break;
-                    case 1: volB = vol; break;
-                    case 2: volC = vol; break;
-                    case 3: volD = vol; break;
-                }
-            }
-
-            public void write(int val)
+            public void write(int data)
             {
                 /*
                  * A tone is produced on a voice by passing the sound chip a 3-bit register address 
@@ -427,121 +419,104 @@ namespace AGILE
                  * 
                  *  f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte1 & 0x0F))
                  */
-                int chan;
-                int cdiv;
-                if ((val & 128) != 0)
+                int counterReloadValue;
+
+                if ((data & 0x80) != 0)
                 {
                     // First Byte
                     // 7  6  5  4  3  2  1  0
                     // 1  .  .  .  .  .  .  .      Identifies first byte (command byte)
-                    // .  R0 R1 .  .  .  .  .      Voice number
+                    // .  R0 R1 .  .  .  .  .      Voice number (i.e. channel)
                     // .  .  .  R2 .  .  .  .      1 = Update attenuation, 0 = Frequency count
-                    // .  .  .  .  A0 A1 A2 A3     
+                    // .  .  .  .  A0 A1 A2 A3     4-bit attenuation value.
                     // .  .  .  .  F6 F7 F8 F9     4 of 10 - bits in frequency count.
-                    chan = (val >> 5) & 0x03;
-                    cdiv = (int)((getDivByNumber((uint)chan) & 0xfff0) | ((uint)val & 0x0F));
-                    latchedChan = (uint)chan;
-                    latchedVolume = ((val & 0x10) != 0) ? true : false;
+                    latchedChannel = (uint)(data >> 5) & 0x03;
+                    counterReloadValue = (int)(((uint)channelCounterReload[latchedChannel] & 0xfff0) | ((uint)data & 0x0F));
+                    updateVolume = ((data & 0x10) != 0) ? true : false;
                 }
                 else
                 {
                     // Second Byte - Frequency count only
                     // 7  6  5  4  3  2  1  0
-                    // 0  .  .  .  .  .  .  .      Identifies second byte(completing byte)
+                    // 0  .  .  .  .  .  .  .      Identifies second byte (completing byte for frequency count)
                     // .  X  .  .  .  .  .  .      Unused, ignored.
                     // .  .  F0 F1 F2 F3 F4 F5     6 of 10 - bits in frequency count.
-                    chan = (int)latchedChan;
-                    cdiv = (int)((getDivByNumber((uint)chan) & 0x000F) | (((uint)val & 0x3F) << 4));
+                    counterReloadValue = (int)(((uint)channelCounterReload[latchedChannel] & 0x000F) | (((uint)data & 0x3F) << 4));
                 }
 
-                if (latchedVolume)
+                if (updateVolume)
                 {
-                    // Update attenuation.
-                    setVolByNumber((uint)chan, (uint)((getVolByNumber((uint)chan) & 16) | ((uint)val & 15)));
+                    // Volume latched. Update attenuation for latched channel.
+                    channelVolume[latchedChannel] = (data & 0x0F);
                 }
                 else
                 {
-                    setDivByNumber((uint)chan, (uint)cdiv);
-                    if (chan == 3)
-                    {
-                        noiseTap = (uint)((((cdiv >> 2) & 1) != 0) ? 9 : 1);
-                        noiseLFSR = 0x8000;
-                    }
+                    // Data latched. Update counter reload register for channel.
+                    channelCounterReload[latchedChannel] = counterReloadValue;
+
+                    // If it is for the noise control register, then set LFSR back to starting value.
+                    if (latchedChannel == 3) lfsr = 0x4000;
+                }
+            }
+
+            private void UpdateToneChannel(int channel)
+            {
+                // If the tone counter reload register is 0, then skip update.
+                if (channelCounterReload[channel] == 0) return;
+
+                // Note: For some reason SQ2 intro, in docking scene, is quite sensitive to how this is decremented and tested.
+
+                // Decrement channel counter. If zero, then toggle output and reload from
+                // the tone counter reload register.
+                if (--channelCounter[channel] <= 0)
+                {
+                    channelCounter[channel] = channelCounterReload[channel];
+                    channelOutput[channel] ^= 1;
                 }
             }
 
             public float render()
             {
-                uint cdiv, tap;
-                float outVal;
-
                 while (ticksCount > 0)
                 {
-                    cntA -= 1;
-                    if (cntA < 0)
-                    {
-                        if (divA > 1)
-                        {
-                            volA ^= 16;
-                            outA = volumeTable[volA];
-                        }
-                        cntA = divA;
-                    }
+                    UpdateToneChannel(0);
+                    UpdateToneChannel(1);
+                    UpdateToneChannel(2);
 
-                    cntB -= 1;
-                    if (cntB < 0)
+                    channelCounter[3] -= 1;
+                    if (channelCounter[3] < 0)
                     {
-                        if (divB > 1)
+                        // Reload noise counter.
+                        if ((channelCounterReload[3] & 0x03) < 3)
                         {
-                            volB ^= 16;
-                            outB = volumeTable[volB];
-                        }
-                        cntB = divB;
-                    }
-
-                    cntC -= 1;
-                    if (cntC < 0)
-                    {
-                        if (divC > 1)
-                        {
-                            volC ^= 16;
-                            outC = volumeTable[volC];
-                        }
-                        cntC = divC;
-                    }
-
-                    cntD -= 1;
-                    if (cntD < 0)
-                    {
-                        cdiv = (uint)(divD & 3);
-                        if (cdiv < 3) cntD = (int)(0x10 << (int)cdiv); else cntD = divC << 1;
-
-                        if (noiseTap == 9)
-                        {
-                            tap = noiseLFSR & noiseTap;
-                            tap ^= tap >> 8;
-                            tap ^= tap >> 4;
-                            tap ^= tap >> 2;
-                            tap ^= tap >> 1;
-                            tap &= 1;
+                            channelCounter[3] = (0x20 << (channelCounterReload[3] & 3));
                         }
                         else
                         {
-                            tap = noiseLFSR & 1;
+                            // In this mode, the counter reload value comes from tone register 2.
+                            channelCounter[3] = channelCounterReload[2];
                         }
 
-                        noiseLFSR = (noiseLFSR >> 1) | (tap << 15);
-                        volD = (volD & 15) | ((noiseLFSR & 1 ^ 1) << 4);
-                        outD = volumeTable[volD];
+                        uint feedback = ((channelCounterReload[3] & 0x04) == 0x04) ?
+                            // White noise. Taps bit 0 and bit 1 of the LFSR as feedback, with XOR.
+                            ((lfsr & 0x0001) ^ ((lfsr & 0x0002) >> 1)) :
+                            // Periodic. Taps bit 0 for the feedback.
+                            (lfsr & 0x0001);
+
+                        // LFSR is shifted every time the counter times out. SR is 15-bit. Feedback added to top bit.
+                        lfsr = (lfsr >> 1) | (feedback << 14);
+                        channelOutput[3] = (int)(lfsr & 1);
                     }
 
                     ticksCount -= 1;
                 }
 
                 ticksCount += ticksPerSample;
-                outVal = outA + outB + outC + outD;
 
-                return outVal;
+                return (float)((volumeTable[channelVolume[0] & 0x0F] * ((channelOutput[0] - 0.5) * 2)) +
+                               (volumeTable[channelVolume[1] & 0x0F] * ((channelOutput[1] - 0.5) * 2)) +
+                               (volumeTable[channelVolume[2] & 0x0F] * ((channelOutput[2] - 0.5) * 2)) +
+                               (volumeTable[channelVolume[3] & 0x0F] * ((channelOutput[3] - 0.5) * 2)));
             }
         }
     }
