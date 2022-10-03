@@ -1639,8 +1639,7 @@ namespace AGILE
                     {
                         if (savedGames.RestoreGameState())
                         {
-                            soundPlayer.ClearCache();
-                            soundPlayer.StopSound();
+                            soundPlayer.Reset();
                             menu.EnableAllMenus();
                             ReplayScriptEvents();
                             ShowPicture(false);
@@ -1660,8 +1659,7 @@ namespace AGILE
                     {
                         if (state.Flags[Defines.NO_PRMPT_RSTRT] || textGraphics.WindowPrint("Press ENTER to restart\nthe game.\n\nPress ESC to continue\nthis game."))
                         {
-                            soundPlayer.ClearCache();
-                            soundPlayer.StopSound();
+                            soundPlayer.Reset();
                             state.Init();
                             state.Flags[Defines.RESTART] = true;
                             menu.EnableAllMenus();
@@ -1711,7 +1709,7 @@ namespace AGILE
                         int quitAction = action.Operands[0].asByte();
                         if ((quitAction == 1) || textGraphics.WindowPrint("Press ENTER to quit.\nPress ESC to keep playing."))
                         {
-                            soundPlayer.StopSound();
+                            soundPlayer.Shutdown();
                             System.Windows.Forms.Application.Exit();
                         }
                     }
@@ -1725,7 +1723,7 @@ namespace AGILE
 
                 case 136: // pause
                     {
-                        // TODO: What happens when the game is unpaused? Should the sound continue playing?
+                        // Note: In the original AGI interpreter, pause stopped sound rather than pause
                         soundPlayer.StopSound();
                         this.textGraphics.Print("      Game paused.\nPress Enter to continue.");
                     }

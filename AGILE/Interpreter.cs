@@ -204,16 +204,22 @@ namespace AGILE
                 // Store what the key states were in this cycle before leaving.
                 for (int i = 0; i < 256; i++) userInput.OldKeys[i] = userInput.Keys[i];
 
+                // If the SOUND ON flag is off, then immediately stop any currently playing sound.
+                if (!state.Flags[Defines.SOUNDON])
+                {
+                    soundPlayer.StopSound(false);
+                }
+
                 inTick = false;
             }
         }
 
         /// <summary>
-        /// Stops the sound thread if it is currently running.
+        /// Fully shuts down the SoundPlayer.
         /// </summary>
-        public void StopSound()
+        public void ShutdownSound()
         {
-            soundPlayer.StopSound();
+            soundPlayer.Shutdown();
         }
 
         /// <summary>
@@ -233,8 +239,7 @@ namespace AGILE
             if (textGraphics.IsWindowOpen()) Thread.Sleep(1000);
 
             // Turn off sound.
-            soundPlayer.StopSound();
-            soundPlayer.ClearCache();
+            soundPlayer.Reset();
 
             // Clear the script event buffer ready for next room.
             state.ScriptBuffer.InitScript();

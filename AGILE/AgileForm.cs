@@ -82,7 +82,7 @@ namespace AGILE
         /// <param name="e"></param>
         public void AgileForm_Closing(object sender, CancelEventArgs e)
         {
-            interpreter.StopSound();
+            interpreter.ShutdownSound();
         }
 
         /// <summary>
