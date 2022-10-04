@@ -156,7 +156,7 @@ namespace AGILE
                     if (voice4NoteNum < voice4Notes.Count)
                     {
                         Note note = voice4Notes[voice4NoteNum++];
-                        byte[] psgBytes = note.Encode();
+                        byte[] psgBytes = note.rawData;
                         psg.write(psgBytes[3]);
                         psg.write(psgBytes[2]);
                         psg.write(psgBytes[4]);
