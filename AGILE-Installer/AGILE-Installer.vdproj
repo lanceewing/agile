@@ -99,6 +99,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_83F3889CB9B14ACD9965F905ADC86E3E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_87AED0E3919F8BFE228526214AAED842"
         "OwnerKey" = "8:_EF22E79843924F87B1D4884B1B3CC6E2"
         "MsmSig" = "8:_UNDEFINED"
@@ -173,12 +179,6 @@
         {
         "MsmKey" = "8:_CE6E283C4DA28443A31BCB566D84E1CA"
         "OwnerKey" = "8:_EF22E79843924F87B1D4884B1B3CC6E2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CF94BCB16BB6478E89263D27912A199D"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -556,6 +556,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_83F3889CB9B14ACD9965F905ADC86E3E"
+            {
+            "SourcePath" = "8:..\\AGILE\\agile-icon.ico"
+            "TargetName" = "8:agile-icon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_CFA610FB9FA349B7883B390291346975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_87AED0E3919F8BFE228526214AAED842"
             {
             "AssemblyRegister" = "3:1"
@@ -835,26 +855,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF94BCB16BB6478E89263D27912A199D"
-            {
-            "SourcePath" = "8:..\\..\\agile_icons\\agile-icon.ico"
-            "TargetName" = "8:agile-icon.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_CFA610FB9FA349B7883B390291346975"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D44E920C7DD90957BBEB4C83510C6355"
             {
             "AssemblyRegister" = "3:1"
@@ -974,7 +974,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AGILE"
         "ProductCode" = "8:{8D8BFB59-F168-42CD-939C-0F680E004745}"
-        "PackageCode" = "8:{EFF2A832-613D-489F-8549-349990954F8C}"
+        "PackageCode" = "8:{4F662E54-0415-41C3-89F0-B44CF94F65FD}"
         "UpgradeCode" = "8:{7362027E-6479-460C-9639-05115D8BE4B7}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -991,7 +991,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Sierra AGI adventure game interpreter."
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:_CF94BCB16BB6478E89263D27912A199D"
+        "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -1094,21 +1094,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_1C9648995DDC44EB9A3E4C06D0F1CD38"
-            {
-            "Name" = "8:AGILE"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_EF22E79843924F87B1D4884B1B3CC6E2"
-            "Folder" = "8:_FD6E67ECF8D84B61A9CBE96D9E5A0C86"
-            "WorkingFolder" = "8:_CFA610FB9FA349B7883B390291346975"
-            "Icon" = "8:_CF94BCB16BB6478E89263D27912A199D"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4A51F0DA26814274BAF015E7EF285BA1"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C12A654BCCED4A419E121CB0A9419119"
             {
             "Name" = "8:AGILE"
             "Arguments" = "8:"
@@ -1119,7 +1105,21 @@
             "Target" = "8:_EF22E79843924F87B1D4884B1B3CC6E2"
             "Folder" = "8:_3DE87603FCF3494A8B7F620DA136AD06"
             "WorkingFolder" = "8:_CFA610FB9FA349B7883B390291346975"
-            "Icon" = "8:_CF94BCB16BB6478E89263D27912A199D"
+            "Icon" = "8:_83F3889CB9B14ACD9965F905ADC86E3E"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D00BD21FBC9B40F5B94D8E54DF1152CF"
+            {
+            "Name" = "8:AGILE"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_EF22E79843924F87B1D4884B1B3CC6E2"
+            "Folder" = "8:_FD6E67ECF8D84B61A9CBE96D9E5A0C86"
+            "WorkingFolder" = "8:_CFA610FB9FA349B7883B390291346975"
+            "Icon" = "8:_83F3889CB9B14ACD9965F905ADC86E3E"
             "Feature" = "8:"
             }
         }
