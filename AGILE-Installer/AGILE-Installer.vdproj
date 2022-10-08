@@ -991,7 +991,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Sierra AGI adventure game interpreter."
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_83F3889CB9B14ACD9965F905ADC86E3E"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -1523,7 +1523,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EF22E79843924F87B1D4884B1B3CC6E2"
             {
-            "SourcePath" = "8:..\\AGILE\\obj\\Debug\\AGILE.exe"
+            "SourcePath" = "8:..\\AGILE\\obj\\Release\\AGILE.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_CFA610FB9FA349B7883B390291346975"
