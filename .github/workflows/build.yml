@@ -22,7 +22,7 @@ jobs:
 
     - name: Build Solution
       run: |
-        msbuild.exe AGILE.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+        msbuild.exe AGILE.sln /nologo /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
         
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
