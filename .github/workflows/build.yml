@@ -14,16 +14,23 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
+    - name: Setup VS Dev Environment
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
+
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.6 
 
     - name: Restore Packages
       run: nuget restore AGILE.sln
+      
+    # Required to Build VS Installer Projects
+    - name: Disable Out of Process Building
+      run: .\DisableOutOfProcBuild.exe
+      working-directory: C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
 
-    - name: Build Solution
-      run: |
-        msbuild.exe AGILE.sln /nologo /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
-        
+    - name: Build the application
+      run: DevEnv AGILE.sln /build Release
+
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
