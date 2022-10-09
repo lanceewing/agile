@@ -20,6 +20,17 @@ AGILE is an almost complete implementation that has attempted to align as close 
 
 AGILE starts by looking for a command line parameter. If there is a single command line parameter provided, it will use its value as the directory in which to look for the AGI game to run. If the command line parameter is not provided, then it looks in the current working directory. If it isn't able to find an AGI game in that directory, then it will open a Folder Browser Dialog for you to choose the folder that contains the AGI game.
 
+## Screenshots
+
+![](img/kings_quest_1.png)           |  ![](img/kings_quest_2.png)
+:-------------------------:|:-------------------------:
+![](img/kings_quest_3.png)  |  ![](img/kings_quest_4.png)
+![](img/space_quest_1.png)     |  ![](img/space_quest_2.png)
+![](img/manhunter_new_york.png)     |  ![](img/manhunter_san_francisco.png)
+![](img/mixed_up_mother_goose.png)     |  ![](img/donald_ducks_playground.png)
+![](img/gold_rush.png)     |  ![](img/police_quest.png)
+![](img/black_cauldron.png)     |  ![](img/ruby_cast.png)
+
 ## Credits 
 
 All the source code for the AGILE interpreter itself, as included in this github repo, is written by me (Lance Ewing).
