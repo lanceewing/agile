@@ -70,6 +70,7 @@ namespace AGILE
             {"bc", "The Black Cauldron (2.00 1987-06-14)", "7f598d4712319b09d7bd5b3be10a2e4a"},
             {"ddp", "Donald Duck's Playground (1.0A 1986-08-08)", "64388812e25dbd75f7af1103bc348596"},
             {"ddp", "Donald Duck's Playground (1.0C 1986-06-09)", "550971d196f65190a5c760d2479406ef"},
+            {"ddp", "Donald Duck's Playground (1.50 1987-06-22)", "268074cc8cb75aa2227c4398886d7acd"},
             {"kq1", "King's Quest I (2.0F 1987-05-05 5.25\"/3.5\")", "10ad66e2ecbd66951534a50aedcd0128"},
             {"kq2", "King's Quest II (2.1 1987-04-10)", "759e39f891a0e1d86dd29d7de485c6ac"},
             {"kq2", "King's Quest II (2.2 1987-05-07 5.25\"/3.5\")", "b944c4ff18fb8867362dc21cc688a283"},
