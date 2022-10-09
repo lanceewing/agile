@@ -26,7 +26,7 @@ jobs:
     # Required to Build VS Installer Projects
     - name: Disable Out of Process Building
       run: .\DisableOutOfProcBuild.exe
-      working-directory: C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
+      working-directory: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
 
     - name: Build the application
       run: DevEnv AGILE.sln /build Release
