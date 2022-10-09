@@ -332,6 +332,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.8"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.8 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.8"
+                    }
+                }
             }
         }
         "Release"
@@ -386,7 +394,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.7.2"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.8"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=863262"
                 }
@@ -998,7 +1006,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AGILE"
         "ProductCode" = "8:{8D8BFB59-F168-42CD-939C-0F680E004745}"
-        "PackageCode" = "8:{4F662E54-0415-41C3-89F0-B44CF94F65FD}"
+        "PackageCode" = "8:{941CE222-CB83-431F-924B-54F8B1B6A570}"
         "UpgradeCode" = "8:{7362027E-6479-460C-9639-05115D8BE4B7}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
