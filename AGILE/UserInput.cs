@@ -257,7 +257,16 @@ namespace AGILE
             controllerMap.Add(61, (0x80000 | '='));
             controllerMap.Add(45, (0x80000 | '-'));
             controllerMap.Add(48, (0x80000 | '0'));
-            
+            controllerMap.Add(49, (0x80000 | '1'));
+            controllerMap.Add(50, (0x80000 | '2'));
+            controllerMap.Add(51, (0x80000 | '3'));
+            controllerMap.Add(52, (0x80000 | '4'));
+            controllerMap.Add(53, (0x80000 | '5'));
+            controllerMap.Add(54, (0x80000 | '6'));
+            controllerMap.Add(55, (0x80000 | '7'));
+            controllerMap.Add(56, (0x80000 | '8'));
+            controllerMap.Add(57, (0x80000 | '9'));
+
             // Manhunter games use unmodified alpha chars as controllers, e.g. C and S.
             controllerMap.Add(65, (0x80000 | 'a'));
             controllerMap.Add(66, (0x80000 | 'b'));
