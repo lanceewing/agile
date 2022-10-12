@@ -253,6 +253,8 @@ namespace AGILE
             controllerMap.Add((49 << 8) + 0, (int)System.Windows.Forms.Keys.Alt | (int)System.Windows.Forms.Keys.N);
             controllerMap.Add((50 << 8) + 0, (int)System.Windows.Forms.Keys.Alt | (int)System.Windows.Forms.Keys.M);
 
+            // TODO: 28, 29, 30, 31 (28 CTRL+\ 29 CTRL +] 30 CTRL + 6 CTRL + '-')
+
             // Normal printable chars.
             controllerMap.Add(32, (0x80000 | ' '));
             controllerMap.Add(33, (0x80000 | '!'));
@@ -315,6 +317,42 @@ namespace AGILE
             controllerMap.Add(88, (0x80000 | 'x'));
             controllerMap.Add(89, (0x80000 | 'y'));
             controllerMap.Add(90, (0x80000 | 'z'));
+            controllerMap.Add(91, (0x80000 | '['));
+            controllerMap.Add(92, (0x80000 | '\\'));
+            controllerMap.Add(93, (0x80000 | ']'));
+            controllerMap.Add(94, (0x80000 | '^'));
+            controllerMap.Add(95, (0x80000 | '_'));
+            controllerMap.Add(96, (0x80000 | '`'));
+            controllerMap.Add(97,  (0x80000 | 'A'));
+            controllerMap.Add(98,  (0x80000 | 'B'));
+            controllerMap.Add(99,  (0x80000 | 'C'));
+            controllerMap.Add(100, (0x80000 | 'D'));
+            controllerMap.Add(101, (0x80000 | 'E'));
+            controllerMap.Add(102, (0x80000 | 'F'));
+            controllerMap.Add(103, (0x80000 | 'G'));
+            controllerMap.Add(104, (0x80000 | 'H'));
+            controllerMap.Add(105, (0x80000 | 'I'));
+            controllerMap.Add(106, (0x80000 | 'J'));
+            controllerMap.Add(107, (0x80000 | 'K'));
+            controllerMap.Add(108, (0x80000 | 'L'));
+            controllerMap.Add(109, (0x80000 | 'M'));
+            controllerMap.Add(110, (0x80000 | 'N'));
+            controllerMap.Add(111, (0x80000 | 'O'));
+            controllerMap.Add(112, (0x80000 | 'P'));
+            controllerMap.Add(113, (0x80000 | 'Q'));
+            controllerMap.Add(114, (0x80000 | 'R'));
+            controllerMap.Add(115, (0x80000 | 'S'));
+            controllerMap.Add(116, (0x80000 | 'T'));
+            controllerMap.Add(117, (0x80000 | 'U'));
+            controllerMap.Add(118, (0x80000 | 'V'));
+            controllerMap.Add(119, (0x80000 | 'W'));
+            controllerMap.Add(120, (0x80000 | 'X'));
+            controllerMap.Add(121, (0x80000 | 'Y'));
+            controllerMap.Add(122, (0x80000 | 'Z'));
+            controllerMap.Add(123, (0x80000 | '{'));
+            controllerMap.Add(124, (0x80000 | '|'));
+            controllerMap.Add(125, (0x80000 | '}'));
+            controllerMap.Add(126, (0x80000 | '~'));
 
             // Joysick codes. We're going to ignore these for now. Who uses a Joystick anyway? Maybe in the 80s. :)
             controllerMap.Add((1 << 8) + 1, 0);
