@@ -71,6 +71,14 @@ namespace AGILE
             this.Keys[(int)e.KeyCode & 0xFF] = true;
             this.Modifiers = (int)e.Modifiers;
             this.KeyPressQueue.Enqueue((int)e.KeyData);
+
+            // F10 is a special key in Windows apps that shifts focus to the window menu. This
+            // results in only every second F10 key event ending up being seen by AGILE. So to
+            // prevent this, we suppress the keypress event when the key is F10 (see github Issue #2)
+            if (e.KeyCode == System.Windows.Forms.Keys.F10)
+            {
+                e.SuppressKeyPress = true;
+            }
         }
 
         /// <summary>
