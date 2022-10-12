@@ -254,8 +254,22 @@ namespace AGILE
             controllerMap.Add((50 << 8) + 0, (int)System.Windows.Forms.Keys.Alt | (int)System.Windows.Forms.Keys.M);
 
             // Normal printable chars.
-            controllerMap.Add(61, (0x80000 | '='));
+            controllerMap.Add(32, (0x80000 | ' '));
+            controllerMap.Add(33, (0x80000 | '!'));
+            controllerMap.Add(34, (0x80000 | '"'));
+            controllerMap.Add(35, (0x80000 | '#'));
+            controllerMap.Add(36, (0x80000 | '$'));
+            controllerMap.Add(37, (0x80000 | '%'));
+            controllerMap.Add(38, (0x80000 | '&'));
+            controllerMap.Add(39, (0x80000 | '\''));
+            controllerMap.Add(40, (0x80000 | '('));
+            controllerMap.Add(41, (0x80000 | ')'));
+            controllerMap.Add(42, (0x80000 | '*'));
+            controllerMap.Add(43, (0x80000 | '+'));
+            controllerMap.Add(44, (0x80000 | ','));
             controllerMap.Add(45, (0x80000 | '-'));
+            controllerMap.Add(46, (0x80000 | '.'));
+            controllerMap.Add(47, (0x80000 | '/'));
             controllerMap.Add(48, (0x80000 | '0'));
             controllerMap.Add(49, (0x80000 | '1'));
             controllerMap.Add(50, (0x80000 | '2'));
@@ -266,8 +280,15 @@ namespace AGILE
             controllerMap.Add(55, (0x80000 | '7'));
             controllerMap.Add(56, (0x80000 | '8'));
             controllerMap.Add(57, (0x80000 | '9'));
+            controllerMap.Add(58, (0x80000 | ':'));
+            controllerMap.Add(59, (0x80000 | ';'));
+            controllerMap.Add(60, (0x80000 | '<'));
+            controllerMap.Add(61, (0x80000 | '='));
+            controllerMap.Add(62, (0x80000 | '>'));
+            controllerMap.Add(63, (0x80000 | '?'));
+            controllerMap.Add(64, (0x80000 | '@'));
 
-            // Manhunter games use unmodified alpha chars as controllers, e.g. C and S.
+            // Manhunter games use unmodified alpha chars as controllers, e.g. C and S. AGI Demo Packs do as well.
             controllerMap.Add(65, (0x80000 | 'a'));
             controllerMap.Add(66, (0x80000 | 'b'));
             controllerMap.Add(67, (0x80000 | 'c'));
