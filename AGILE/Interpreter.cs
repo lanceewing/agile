@@ -423,12 +423,6 @@ namespace AGILE
                 {
                     state.Controllers[state.KeyToControllerMap[ch]] = true;
                 }
-                else if ((ch >= (0x80000 + 'A')) && (ch <= (0x80000 + 'Z')) && (state.KeyToControllerMap.ContainsKey(0x80000 + Char.ToLower((char)(ch - 0x80000)))))
-                {
-                    // We map the lower case alpha chars in the key map, so check for upper case and convert to
-                    // lower when setting controller state. This allows for if the user has CAPS LOCK on.
-                    state.Controllers[state.KeyToControllerMap[0x80000 + Char.ToLower((char)(ch - 0x80000))]] = true;
-                }
                 else if ((ch & 0xF0000) == 0x80000)  // Standard char from a keypress event.
                 {
                     state.Vars[Defines.LAST_CHAR] = (byte)(ch & 0xff);
