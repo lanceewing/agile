@@ -32,11 +32,6 @@ namespace AGILE
         public bool[] OldKeys { get; set; }
 
         /// <summary>
-        /// Stores the current state of the key modifiers (i.e. Alt, Control, Shift)
-        /// </summary>
-        public int Modifiers { get; set; }
-
-        /// <summary>
         /// A Map between IBM PC key codes as understood by the PC AGI interpreter and the C# Key codes.
         /// </summary>
         public Dictionary<int, int> KeyCodeMap { get; set; }
@@ -69,16 +64,28 @@ namespace AGILE
         public void KeyDown(KeyEventArgs e)
         {
             this.Keys[(int)e.KeyCode & 0xFF] = true;
-            this.Modifiers = (int)e.Modifiers;
-            this.KeyPressQueue.Enqueue((int)e.KeyData);
 
-            // F10 is a special key in Windows apps that shifts focus to the window menu. This
+            // F10 (and Alt) are special keys in Windows apps that shifts focus to the window menu. This
             // results in only every second F10 key event ending up being seen by AGILE. So to
             // prevent this, we suppress the keypress event when the key is F10 (see github Issue #2)
-            if (e.KeyCode == System.Windows.Forms.Keys.F10)
+            if (e.KeyCode == System.Windows.Forms.Keys.F10 ||
+                e.KeyCode == System.Windows.Forms.Keys.Menu)
             {
                 e.SuppressKeyPress = true;
             }
+
+            // Do not enqueue key presses that are Alt/Shift/Ctrl by themselves. AGI doesn't support mapping those.
+            if (e.KeyData == (System.Windows.Forms.Keys.ShiftKey | System.Windows.Forms.Keys.Shift)) return;
+            if (e.KeyData == (System.Windows.Forms.Keys.Menu | System.Windows.Forms.Keys.Alt)) return;
+            if (e.KeyData == (System.Windows.Forms.Keys.ControlKey | System.Windows.Forms.Keys.Control)) return;
+
+            // A-Z and a-z are handled by KeyPressed, so we filter them out for KeyDown.
+            if ((e.KeyData >= System.Windows.Forms.Keys.A) && (e.KeyData <= System.Windows.Forms.Keys.Z)) return;
+            if ((e.Modifiers == System.Windows.Forms.Keys.ShiftKey) &&
+                (e.KeyCode >= System.Windows.Forms.Keys.A) && (e.KeyCode <= System.Windows.Forms.Keys.Z)) return;
+
+            // If we get this far, at it to the key press queue.
+            this.KeyPressQueue.Enqueue((int)e.KeyData);
         }
 
         /// <summary>
@@ -88,7 +95,6 @@ namespace AGILE
         public void KeyUp(KeyEventArgs e)
         {
             this.Keys[(int)e.KeyCode & 0xFF] = false;
-            this.Modifiers = (int)e.Modifiers;
         }
 
         /// <summary>
