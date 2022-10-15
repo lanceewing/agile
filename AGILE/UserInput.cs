@@ -63,6 +63,14 @@ namespace AGILE
         /// <param name="e"></param>
         public void KeyDown(KeyEventArgs e)
         {
+            // AGILE interpreter ignores some keys completely, e.g. F11.
+            if (e.KeyData == System.Windows.Forms.Keys.F11)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             this.Keys[(int)e.KeyCode & 0xFF] = true;
 
             // F10 (and Alt) are special keys in Windows apps that shifts focus to the window menu. This

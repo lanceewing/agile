@@ -93,10 +93,12 @@ namespace AGILE
         /// <param name="e"></param>
         public void AgileForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyData == Keys.F11)
+            // Both ALT-ENTER and F11 toggle full screen.
+            if ((e.KeyData == Keys.F11) || (e.KeyData == (Keys.Alt | Keys.Enter)))
             {
                 ToggleFullscreen();
-            }
+                e.Handled = true;
+            } 
         }
 
         /// <summary>
