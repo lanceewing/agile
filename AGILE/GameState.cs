@@ -165,6 +165,8 @@ namespace AGILE
             this.Words = game.Words;
             this.MaxDrawn = 15;
             this.PriorityBase = 48;
+            this.StatusLineRow = 21;
+            this.InputLineRow = 23;
             this.CurrentInput = new StringBuilder();
             this.LastInput = "";
             this.SimpleName = "";

@@ -253,6 +253,7 @@ namespace AGILE
             // Copy VisualPixels to game screen.
             System.Buffer.BlockCopy(state.VisualPixels, 0, this.pixels, (8 * state.PictureRow) * 320 * sizeof(int), sizeof(int) * state.VisualPixels.Length);
 
+            UpdateStatusLine();
             UpdateInputLine();
         }
 
@@ -405,33 +406,25 @@ namespace AGILE
         }
 
         /// <summary>
-        /// Updates the status line with the score and sound status, or clears to black if not visible.
+        /// Updates the status line with the score and sound status.
         /// </summary>
         public void UpdateStatusLine()
         {
-            if (state.GraphicsMode)
+            if (state.ShowStatusLine)
             {
-                if (state.ShowStatusLine)
-                {
-                    if (state.Flags[Defines.RESTORE]) ClearLines(state.StatusLineRow, state.StatusLineRow, 15);
+                ClearLines(state.StatusLineRow, state.StatusLineRow, 15);
 
-                    StringBuilder scoreStatus = new StringBuilder();
-                    scoreStatus.Append(" Score:");
-                    scoreStatus.Append(state.Vars[Defines.SCORE]);
-                    scoreStatus.Append(" of ");
-                    scoreStatus.Append(state.Vars[Defines.MAXSCORE]);
-                    DrawString(this.pixels, scoreStatus.ToString().PadRight(30, ' '), 0, state.StatusLineRow * 8, 0, 15);
+                StringBuilder scoreStatus = new StringBuilder();
+                scoreStatus.Append(" Score:");
+                scoreStatus.Append(state.Vars[Defines.SCORE]);
+                scoreStatus.Append(" of ");
+                scoreStatus.Append(state.Vars[Defines.MAXSCORE]);
+                DrawString(this.pixels, scoreStatus.ToString().PadRight(30, ' '), 0, state.StatusLineRow * 8, 0, 15);
 
-                    StringBuilder soundStatus = new StringBuilder();
-                    soundStatus.Append("Sound:");
-                    soundStatus.Append(state.Flags[Defines.SOUNDON] ? "on" : "off");
-                    DrawString(this.pixels, soundStatus.ToString().PadRight(10, ' '), 30 * 8, state.StatusLineRow * 8, 0, 15);
-                }
-                else
-                {
-                    // If not showing status line, then clear it to black.
-                    ClearLines(0, 0, 0);
-                }
+                StringBuilder soundStatus = new StringBuilder();
+                soundStatus.Append("Sound:");
+                soundStatus.Append(state.Flags[Defines.SOUNDON] ? "on" : "off");
+                DrawString(this.pixels, soundStatus.ToString().PadRight(10, ' '), 30 * 8, state.StatusLineRow * 8, 0, 15);
             }
         }
 
