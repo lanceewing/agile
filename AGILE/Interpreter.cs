@@ -172,21 +172,14 @@ namespace AGILE
                 // allow ego's direction to be known to the logics even when ego is on a move.obj().
                 UpdateObjectDirections();
 
-                // Store score and sound state prior to scanning LOGIC 0, so we can determine if they change.
-                byte previousScore = state.Vars[Defines.SCORE];
-                bool soundStatus = state.Flags[Defines.SOUNDON];
-
                 // Continue scanning LOGIC 0 while the return value is above 0, indicating a room change.
                 while (NewRoom(commands.ExecuteLogic(0))) ;
 
                 // Set ego's direction from the variable.
                 ego.Direction = state.Vars[Defines.EGODIR];
 
-                // Update the status line, if the score or sound status have changed.
-                if ((state.Vars[Defines.SCORE] != previousScore) || (soundStatus != state.Flags[Defines.SOUNDON]))
-                {
-                    textGraphics.UpdateStatusLine();
-                }
+                // Update the status line, in case the score or sound status have changed.
+                textGraphics.UpdateStatusLine();
 
                 state.Vars[Defines.OBJHIT] = 0;
                 state.Vars[Defines.OBJEDGE] = 0;
@@ -309,8 +302,8 @@ namespace AGILE
             state.Horizon = Defines.HORIZON;
             state.ClearControllers();
 
-            // Draw the status line, if applicable.
-            textGraphics.UpdateStatusLine();
+            // Draw the status line background if applicable.
+            if (state.ShowStatusLine) textGraphics.ClearLines(state.StatusLineRow, state.StatusLineRow, 15);
 
             // Return true to indicate to the scan loop to rescan.
             return true;

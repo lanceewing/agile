@@ -55,9 +55,6 @@ namespace AGILE
                             DialogResult result = folderDialog.ShowDialog(Control.FromHandle(dummyForm.Handle));
                             if (result == DialogResult.OK)
                             {
-                                Properties.Settings.Default.lastBrowsePath = folderDialog.SelectedPath;
-                                Properties.Settings.Default.Save();
-
                                 gameFolder = folderDialog.SelectedPath;
                                 firstTime = false;
                             }
