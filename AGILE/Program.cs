@@ -64,7 +64,7 @@ namespace AGILE
 
             if (game != null)
             {
-                Application.Run(new AgileForm(new AGI.Game(gameFolder)));
+                Application.Run(new AgileForm(game));
             }
         }
     }
