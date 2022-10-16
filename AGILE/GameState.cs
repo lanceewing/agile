@@ -146,6 +146,11 @@ namespace AGILE
         public ScriptBuffer ScriptBuffer { get; set; }
 
         /// <summary>
+        /// Returns true if the AGI game files are V3; otherwise false.
+        /// </summary>
+        public bool IsAGIV3 { get { return (game.v3GameSig != null); } }
+
+        /// <summary>
         /// Constructor for GameState.
         /// </summary>
         /// <param name="game">The Game from which we'll get all of the game data.</param>
