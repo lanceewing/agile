@@ -46,6 +46,35 @@ namespace AGILE
         /// </summary>
         private readonly MixingSampleProvider mixer;
 
+        private readonly short[] dissolveDataV2 = new short[]
+        {
+              -2,   -3,   -2,   -1, 0x00, 0x00, 0x01, 0x01, 
+            0x01, 0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 
+            0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
+            0x03, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05, 0x05, 
+            0x05, 0x06, 0x06, 0x06, 0x06, 0x06, 0x07, 0x07, 
+            0x07, 0x07, 0x08, 0x08, 0x08, 0x08, 0x09, 0x09, 
+            0x09, 0x09, 0x0A, 0x0A, 0x0A, 0x0A, 0x0B, 0x0B, 
+            0x0B, 0x0B, 0x0B, 0x0B, 0x0C, 0x0C, 0x0C, 0x0C, 
+            0x0C, 0x0C, 0x0D, -100
+        };
+
+        private readonly short[] dissolveDataV3 = new short[]
+        {
+              -2,   -3,   -2,   -1, 0x00, 0x00, 0x00, 0x00, 
+            0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 
+            0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+            0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
+            0x03, 0x04, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05, 
+            0x05, 0x05, 0x05, 0x06, 0x06, 0x06, 0x06, 0x06,
+            0x07, 0x07, 0x07, 0x07, 0x08, 0x08, 0x08, 0x08,
+            0x09, 0x09, 0x09, 0x09, 0x0A, 0x0A, 0x0A, 0x0A,
+            0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0C, 0x0C, 
+            0x0C, 0x0C, 0x0C, 0x0C, 0x0D, -100
+        };
+
+        private short[] dissolveData;
+
         /// <summary>
         /// Constructor for SoundPlayer.
         /// </summary>
@@ -55,6 +84,7 @@ namespace AGILE
             this.state = state;
             this.SoundCache = new Dictionary<int, byte[]>();
             this.soundNumPlaying = -1;
+            this.dissolveData = (state.IsAGIV3? dissolveDataV3 : dissolveDataV2);
 
             // Set up the NAudio mixer. Using a single WaveOutEvent instance, and associated mixer eliminates
             // delays caused by creation of a WaveOutEvent per sound.
@@ -71,23 +101,14 @@ namespace AGILE
         /// <param name="sound">The AGI Sound to load.</param>
         public void LoadSound(Sound sound)
         {
-            bool voice1Playing = true;
-            bool voice2Playing = true;
-            bool voice3Playing = true;
-            bool voice4Playing = true;
-            int voice1SampleCount = 0;
-            int voice2SampleCount = 0;
-            int voice3SampleCount = 0;
-            int voice4SampleCount = 0;
-            List<Note> voice1Notes = sound.Notes[0];
-            List<Note> voice2Notes = sound.Notes[1];
-            List<Note> voice3Notes = sound.Notes[2];
-            List<Note> voice4Notes = sound.Notes[3];
-            int voice1NoteNum = 0;
-            int voice2NoteNum = 0;
-            int voice3NoteNum = 0;
-            int voice4NoteNum = 0;
+            Note[] voiceCurrentNote = new Note[4];
+            bool[] voicePlaying = new bool[4] { true, true, true, true };
+            int[] voiceSampleCount = new int[4];
+            int[] voiceNoteNum = new int[4];
+            int[] voiceDissolveCount = new int[4];
+            int durationUnitCount = 0;
 
+            // A single note duration unit is 1/60th of a second
             int samplesPerDurationUnit = SAMPLE_RATE / 60;
             MemoryStream sampleStream = new MemoryStream();
 
@@ -95,83 +116,42 @@ namespace AGILE
             SN76496 psg = new SN76496();
 
             // Start by converting the Notes into samples.
-            while (voice1Playing || voice2Playing || voice3Playing || voice4Playing)
+            while (voicePlaying[0] || voicePlaying[1] || voicePlaying[2] || voicePlaying[3])
             {
-                if (voice1SampleCount-- <= 0)
+                for (int voiceNum = 0; voiceNum < 4; voiceNum++)
                 {
-                    if (voice1NoteNum < voice1Notes.Count)
+                    if (voicePlaying[voiceNum])
                     {
-                        Note note = voice1Notes[voice1NoteNum++];
-                        byte[] psgBytes = note.rawData;
-                        psg.write(psgBytes[3]);
-                        psg.write(psgBytes[2]);
-                        psg.write(psgBytes[4]);
-                        voice1SampleCount = note.duration * samplesPerDurationUnit;
-                    }
-                    else
-                    {
-                        voice1Playing = false;
-                        psg.setVolByNumber(0, 0x0F);
+                        if (voiceSampleCount[voiceNum]-- <= 0)
+                        {
+                            if (voiceNoteNum[voiceNum] < sound.Notes[voiceNum].Count)
+                            {
+                                voiceCurrentNote[voiceNum] = sound.Notes[voiceNum][voiceNoteNum[voiceNum]++];
+                                byte[] psgBytes = voiceCurrentNote[voiceNum].rawData;
+                                psg.Write(psgBytes[3]);
+                                psg.Write(psgBytes[2]);
+                                psg.Write(psgBytes[4]);
+                                voiceSampleCount[voiceNum] = voiceCurrentNote[voiceNum].duration * samplesPerDurationUnit;
+                                voiceDissolveCount[voiceNum] = 0;
+                            }
+                            else
+                            {
+                                voicePlaying[voiceNum] = false;
+                                psg.SetVolByNumber(voiceNum, 0x0F);
+                            }
+                        }
+                        if ((durationUnitCount == 0) && (voicePlaying[voiceNum]))
+                        {
+                            voiceDissolveCount[voiceNum] = UpdateVolume(psg, voiceCurrentNote[voiceNum].origVolume, voiceNum, voiceDissolveCount[voiceNum]);
+                        }
                     }
                 }
 
-                if (voice2SampleCount-- <= 0)
-                {
-                    if (voice2NoteNum < voice2Notes.Count)
-                    {
-                        Note note = voice2Notes[voice2NoteNum++];
-                        byte[] psgBytes = note.rawData;
-                        psg.write(psgBytes[3]);
-                        psg.write(psgBytes[2]);
-                        psg.write(psgBytes[4]);
-                        voice2SampleCount = note.duration * samplesPerDurationUnit;
-                    }
-                    else
-                    {
-                        voice2Playing = false;
-                        psg.setVolByNumber(1, 0x0F);
-                    }
-                }
-
-                if (voice3SampleCount-- <= 0)
-                {
-                    if (voice3NoteNum < voice3Notes.Count)
-                    {
-                        Note note = voice3Notes[voice3NoteNum++];
-                        byte[] psgBytes = note.rawData;
-                        psg.write(psgBytes[3]);
-                        psg.write(psgBytes[2]);
-                        psg.write(psgBytes[4]);
-                        voice3SampleCount = note.duration * samplesPerDurationUnit;
-                    }
-                    else
-                    {
-                        voice3Playing = false;
-                        psg.setVolByNumber(2, 0x0F);
-                    }
-                }
-
-                if (voice4SampleCount-- <= 0)
-                {
-                    if (voice4NoteNum < voice4Notes.Count)
-                    {
-                        Note note = voice4Notes[voice4NoteNum++];
-                        byte[] psgBytes = note.rawData;
-                        psg.write(psgBytes[3]);
-                        psg.write(psgBytes[2]);
-                        psg.write(psgBytes[4]);
-                        voice4SampleCount = note.duration * samplesPerDurationUnit;
-                    }
-                    else
-                    {
-                        voice4Playing = false;
-                        psg.setVolByNumber(3, 0x0F);
-                    }
-                }
+                // This count hits zero 60 times a second. It counts samples from 0 to 734 (i.e. (44100 / 60) - 1).
+                durationUnitCount = ((durationUnitCount + 1) % samplesPerDurationUnit);
 
                 // Use the SN76496 PSG emulation to generate the sample data.
-                short sample = (short)(psg.render());
-
+                short sample = (short)(psg.Render());
                 sampleStream.WriteByte((byte)(sample & 0xFF));
                 sampleStream.WriteByte((byte)((sample >> 8) & 0xFF));
                 sampleStream.WriteByte((byte)(sample & 0xFF));
@@ -183,6 +163,30 @@ namespace AGILE
 
             // Cache for use when the sound is played. This reduces overhead of generating WAV on every play.
             this.SoundCache.Add(sound.Index, waveData);
+        }
+
+        private int UpdateVolume(SN76496 psg, int baseVolume, int channel, int dissolveCount)
+        {
+            int volume = baseVolume;
+
+            if (volume != 0x0F)
+            {
+                int dissolveValue = (dissolveData[dissolveCount] == -100 ? dissolveData[dissolveCount - 1] : dissolveData[dissolveCount++]);
+
+                // Add master volume and dissolve value to current channel volume. Noise channel doesn't dissolve.
+                if (channel < 3) volume += dissolveValue;
+                
+                volume += this.state.Vars[Defines.ATTENUATION];
+
+                if (volume < 0) volume = 0;
+                if (volume > 0x0F) volume = 0x0F;
+                if (volume < 8) volume += 2;
+
+                // Apply calculated volume to PSG channel.
+                psg.SetVolByNumber(channel, volume);
+            }
+
+            return dissolveCount;
         }
 
         /// <summary>
@@ -394,18 +398,17 @@ namespace AGILE
                 lfsr = 0x4000;
             }
 
-            public void setVolByNumber(uint channel, uint volume)
+            public void SetVolByNumber(int channel, int volume)
             {
-                switch (channel)
-                {
-                    case 0: channelVolume[0] = (int)(volume & 0x0F); break;
-                    case 1: channelVolume[1] = (int)(volume & 0x0F); break;
-                    case 2: channelVolume[2] = (int)(volume & 0x0F); break;
-                    case 3: channelVolume[3] = (int)(volume & 0x0F); break;
-                }
+                channelVolume[channel] = (int)(volume & 0x0F);
             }
 
-            public void write(int data)
+            public int GetVolByNumber(int channel)
+            {
+                return (channelVolume[channel] & 0x0F);
+            }
+
+            public void Write(int data)
             {
                 /*
                  * A tone is produced on a voice by passing the sound chip a 3-bit register address 
@@ -475,7 +478,7 @@ namespace AGILE
                 }
             }
 
-            public float render()
+            public float Render()
             {
                 while (ticksCount > 0)
                 {
