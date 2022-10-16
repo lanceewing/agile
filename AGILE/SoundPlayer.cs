@@ -165,6 +165,16 @@ namespace AGILE
             this.SoundCache.Add(sound.Index, waveData);
         }
 
+        /// <summary>
+        /// Updates the volume of the given channel, by applying the dissolve data and master volume to the 
+        /// given base volume and then sets that in the SN76496 PSG. The noise channel does not apply the
+        /// dissolve data, so skips that bit.
+        /// </summary>
+        /// <param name="psg">The SN76496 PSG to set the calculated volume in.</param>
+        /// <param name="baseVolume">The base volume to apply the dissolve data and master volume to.</param>
+        /// <param name="channel">The channel to update the volume for.</param>
+        /// <param name="dissolveCount">The current dissolve count value for the note being played by the given channel.</param>
+        /// <returns>The new dissolve count value for the channel.</returns>
         private int UpdateVolume(SN76496 psg, int baseVolume, int channel, int dissolveCount)
         {
             int volume = baseVolume;
