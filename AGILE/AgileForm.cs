@@ -1,7 +1,9 @@
 ﻿using AGI;
 using System;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 
 namespace AGILE
@@ -13,6 +15,7 @@ namespace AGILE
     /// </summary>
     public partial class AgileForm : Form
     {
+        #region Declares, Imports. etc.
 
         private Interpreter interpreter;
         private GameScreen screen;
@@ -24,10 +27,14 @@ namespace AGILE
         private Boolean fullScreen = false;
         private FormWindowState windowStateBeforeFullscreen;
 
+        private static string xmlEditPath = Properties.Settings.Default.xmlEditPath;
+
         /// <summary>
         /// The number of TimeSpan Ticks to achieve 60 times a second.
         /// </summary>
         private TimeSpan targetElaspedTime = TimeSpan.FromTicks(166667);
+
+        #endregion Declares, Imports. etc.
 
         /// <summary>
         /// Constructor for AgileForm.
@@ -43,8 +50,6 @@ namespace AGILE
             this.KeyDown += (s, e) => userInput.KeyDown(e);
             this.KeyUp += (s, e) => userInput.KeyUp(e);
             this.KeyPress += (s, e) => userInput.KeyPressed(e);
-            this.FormClosing += AgileForm_Closing;
-            this.KeyDown += AgileForm_KeyDown;
 
             // Update title with version and game name.
             Detection gameDetection = new Detection(game);
@@ -70,20 +75,54 @@ namespace AGILE
             this.lastTime = stopWatch.Elapsed;
             this.deltaTime = TimeSpan.Zero;
 
-            this.StartPosition = FormStartPosition.CenterScreen;
             this.Show();
             this.Activate();
         }
 
+        #region Form Events
+
         /// <summary>
-        /// Invoked when this form is closing. We use this to stop the sound playing thread.
+        /// Get initial settings
+        /// </summary>
+        private void AgileForm_Load(object sender, EventArgs e)
+        {
+            #region Load Screen Metrics
+
+            if (!Properties.Settings.Default.AgileFormLocation.IsEmpty)
+                this.Location = Properties.Settings.Default.AgileFormLocation;
+            else
+                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+
+            if (!Properties.Settings.Default.AgileFormSize.IsEmpty)
+                this.Size = Properties.Settings.Default.AgileFormSize;
+
+            #endregion Load Screen Metrics
+
+        }
+
+        /// <summary>
+        /// Stops the sound playing thread and saves form settings on close.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AgileForm_Closing(object sender, CancelEventArgs e)
+        private void AgileForm_Closing(object sender, FormClosingEventArgs e)
         {
             interpreter.ShutdownSound();
+
+            #region Save Screen Metrics
+
+            // Save screen metrics
+            Properties.Settings.Default.AgileFormLocation = this.Location;
+            Properties.Settings.Default.AgileFormSize = this.Size;
+
+            #endregion Save Screen Metrics
+
+            Properties.Settings.Default.Save();
         }
+
+        #endregion Form Events
+
+        #region Key events
 
         /// <summary>
         /// Invoked on key down events. Allows the windows form itself to do something in 
@@ -121,6 +160,77 @@ namespace AGILE
 
             this.fullScreen = !this.fullScreen;
         }
+
+        #endregion Key events
+
+        #region Context Menu
+
+        /// <summary>
+        /// Catches the context menu opening event
+        ///     Can be used to alter context menu in real time
+        /// </summary>
+        private void cntxtMenu_Opening(object sender, CancelEventArgs e) { }
+
+        private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
+        {
+            string configPath = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath) + "\\user.config";
+
+            if (!System.IO.File.Exists(xmlEditPath))
+            {
+                MessageBox.Show("Please set an editor in the options dialog and try again.", "xmlEditor not found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                OptionsFrm optionsFrm = new OptionsFrm();
+                optionsFrm.Show();
+                return;
+            }
+
+            if (!System.IO.File.Exists(xmlEditPath))
+            {
+                //MessageBox.Show("Please set an editor in the options dialog and try again.", "xmlEditor not found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //OptionsFrm optionsFrm = new OptionsFrm();
+                //optionsFrm.Show();
+                //return;
+            }
+
+            try
+            {
+                Process.Start(xmlEditPath, configPath);
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Turn aspect correctiion on
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="
+        private void cntxtMenuAspectCorrectionOn_Click(object sender, EventArgs e)
+        {
+            if (!this.fullScreen)
+                this.ClientSize = new System.Drawing.Size(this.Width, ((this.Width / 4) * 3));
+
+            if (cntxtMenuAspectCorrectionOn.Checked == true)
+                cntxtMenuAspectCorrectionOff.Checked = false;
+            else
+                cntxtMenuAspectCorrectionOff.Checked = true;
+        }
+
+        /// <summary>
+        /// Turn aspect correctiion off
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cntxtMenuAspectCorrectionOff_Click(object sender, EventArgs e)
+        {
+            if (!this.fullScreen)
+                this.ClientSize = new System.Drawing.Size(this.Width, ((this.Width / 8) * 5));
+
+            if (cntxtMenuAspectCorrectionOff.Checked == true)
+                cntxtMenuAspectCorrectionOn.Checked = false;
+            else
+                cntxtMenuAspectCorrectionOn.Checked = true;
+        }
+
+        #endregion Context Menu
 
         /// <summary>
         /// Processes the Tick event of the Timer, which we've requested to be triggered 60 
