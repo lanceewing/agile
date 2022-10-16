@@ -1528,6 +1528,7 @@ namespace AGILE
                     {
                         state.ShowStatusLine = true;
                         textGraphics.ClearLines(state.StatusLineRow, state.StatusLineRow, 15);
+                        textGraphics.UpdateStatusLine();
                     }
                     break;
 
@@ -1644,6 +1645,7 @@ namespace AGILE
                             ReplayScriptEvents();
                             ShowPicture(false);
                             newRoom = state.CurrentRoom = state.Vars[Defines.CURROOM];
+                            textGraphics.UpdateStatusLine();
                             exit = true;
                         }
                     }
