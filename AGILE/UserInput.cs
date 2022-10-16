@@ -68,6 +68,14 @@ namespace AGILE
         /// <param name="e"></param>
         public void KeyDown(KeyEventArgs e)
         {
+            // AGILE interpreter ignores some keys completely, e.g. F11.
+            if (e.KeyData == System.Windows.Forms.Keys.F11)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             this.Keys[(int)e.KeyCode & 0xFF] = true;
             this.Modifiers = (int)e.Modifiers;
             this.KeyPressQueue.Enqueue((int)e.KeyData);
