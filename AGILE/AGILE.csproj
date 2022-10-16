@@ -161,15 +161,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)$(TargetName).exe" "$(ProjectDir)..\bin\$(TargetName).exe"
-
-copy "$(TargetDir)AGILibrary.dll" "$(ProjectDir)..\bin\AGILibrary.dll
-copy "$(TargetDir)NAudio.Asio.dll" "$(ProjectDir)..\bin\NAudio.Asio.dll
-copy "$(TargetDir)NAudio.Core.dll" "$(ProjectDir)..\bin\NAudio.Core.dll
-copy "$(TargetDir)NAudio.dll" "$(ProjectDir)..\bin\NAudio.dll
-copy "$(TargetDir)NAudio.Midi.dll" "$(ProjectDir)..\bin\NAudio.Midi.dll
-copy "$(TargetDir)NAudio.Wasapi.dll" "$(ProjectDir)..\bin\NAudio.Wasapi.dll
-copy "$(TargetDir)NAudio.WinForms.dll" "$(ProjectDir)..\bin\NAudio.WinForms.dll
-copy "$(TargetDir)NAudio.WinMM.dll" "$(ProjectDir)..\bin\NAudio.WinMM.dll</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
