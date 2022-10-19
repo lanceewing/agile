@@ -207,7 +207,7 @@ namespace AGILE
         public void PlaySound(Sound sound, int endFlag)
         {
             // Stop any currently playing sound. Will set the end flag for the previous sound.
-            StopSound(false);
+            StopSound();
 
             // Set the starting state of the sound end flag to false.
             state.Flags[endFlag] = false;
@@ -305,7 +305,7 @@ namespace AGILE
             // Wait until either the sound has ended, or we have been told to stop.
             while (!playbackEnded && (soundNumPlaying >= 0))
             {
-                Thread.Sleep(50);
+                Thread.Sleep(10);
             }
 
             // If we didn't stop due to the playback ending, then tell it to stop playing.

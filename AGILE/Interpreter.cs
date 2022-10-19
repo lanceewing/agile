@@ -185,6 +185,9 @@ namespace AGILE
                 // Update the status line, if the score or sound status have changed.
                 if ((state.Vars[Defines.SCORE] != previousScore) || (soundStatus != state.Flags[Defines.SOUNDON]))
                 {
+                    // If the SOUND ON flag is off, then immediately stop any currently playing sound.
+                    if (!state.Flags[Defines.SOUNDON]) soundPlayer.StopSound();
+
                     textGraphics.UpdateStatusLine();
                 }
 
@@ -210,12 +213,6 @@ namespace AGILE
 
                 // Store what the key states were in this cycle before leaving.
                 for (int i = 0; i < 256; i++) userInput.OldKeys[i] = userInput.Keys[i];
-
-                // If the SOUND ON flag is off, then immediately stop any currently playing sound.
-                if (!state.Flags[Defines.SOUNDON])
-                {
-                    soundPlayer.StopSound(false);
-                }
 
                 inTick = false;
             }
