@@ -89,20 +89,30 @@ namespace AGILE
         {
             if (this.screen != null)
             {
-                if (cntxtMenuAspectCorrectionOn.Checked)
+                if (cntxtMenuStretchMode.Checked)
                 {
+                    // Stretch mode, so fill the window completely (i.e. stretch to fit).
+                    screen.Location = new Point(0, 0);
+                    screen.Dock = DockStyle.Fill;
+                }
+                else 
+                {
+                    // Aspect correction on uses 4:3, and off uses 8:5.
+                    int ratioWidth = (cntxtMenuAspectCorrectionOn.Checked ? 4 : 8);
+                    int ratioHeight = (cntxtMenuAspectCorrectionOn.Checked ? 3 : 5);
+
                     // Stops GameScreen filling screen (this is mainly to support fullscreen mode)
                     screen.Dock = DockStyle.None;
 
-                    if (ClientSize.Height >= ((ClientSize.Width / 4) * 3))
+                    if (Screen.FromControl(this).Bounds.Height >= ((ClientSize.Width / ratioWidth) * ratioHeight))
                     {
                         // GameScreen fills whole width, adjusting height according to aspect ratio.
-                        screen.Size = new Size(ClientSize.Width, ((ClientSize.Width / 4) * 3));
+                        screen.Size = new Size(ClientSize.Width, ((ClientSize.Width / ratioWidth) * ratioHeight));
                     }
                     else
                     {
                         // GameScreen fills whole height, adjusting width according to aspect ratio.
-                        screen.Size = new Size(((ClientSize.Height / 3) * 4), ClientSize.Height);
+                        screen.Size = new Size(((ClientSize.Height / ratioHeight) * ratioWidth), ClientSize.Height);
                     }
 
                     // Center the GameScreen (this is mainly to support fullscreen mode)
@@ -115,12 +125,6 @@ namespace AGILE
                     {
                         ClientSize = this.screen.Size;
                     }
-                }
-                else
-                {
-                    // No aspect correction, so fill the window completely.
-                    screen.Location = new Point(0, 0);
-                    screen.Dock = DockStyle.Fill;
                 }
             }
         }
@@ -268,10 +272,9 @@ namespace AGILE
         /// <param name="
         private void cntxtMenuAspectCorrectionOn_Click(object sender, EventArgs e)
         {
-            if (cntxtMenuAspectCorrectionOn.Checked == true)
-                cntxtMenuAspectCorrectionOff.Checked = false;
-            else
-                cntxtMenuAspectCorrectionOff.Checked = true;
+            cntxtMenuStretchMode.Checked = false;
+            cntxtMenuAspectCorrectionOff.Checked = false;
+            cntxtMenuAspectCorrectionOn.Checked = true;
 
             AdjustGameScreen();
         }
@@ -283,10 +286,23 @@ namespace AGILE
         /// <param name="e"></param>
         private void cntxtMenuAspectCorrectionOff_Click(object sender, EventArgs e)
         {
-            if (cntxtMenuAspectCorrectionOff.Checked == true)
-                cntxtMenuAspectCorrectionOn.Checked = false;
-            else
-                cntxtMenuAspectCorrectionOn.Checked = true;
+            cntxtMenuStretchMode.Checked = false;
+            cntxtMenuAspectCorrectionOff.Checked = true;
+            cntxtMenuAspectCorrectionOn.Checked = false;
+
+            AdjustGameScreen();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cntxtMenuStretchMode_Click(object sender, EventArgs e)
+        {
+            cntxtMenuStretchMode.Checked = true;
+            cntxtMenuAspectCorrectionOff.Checked = false;
+            cntxtMenuAspectCorrectionOn.Checked = false;
 
             AdjustGameScreen();
         }
