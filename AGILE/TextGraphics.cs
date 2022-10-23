@@ -694,7 +694,7 @@ namespace AGILE
             maxLength = 0;
 
             if (str != null)
-            {                
+            {
                 // Recursively expand/substitute references to other strings.
                 string processedMessage = ExpandReferences(str);
 
