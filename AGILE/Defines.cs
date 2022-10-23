@@ -142,6 +142,8 @@ namespace AGILE
 
         public const int MINDIST = 6;               /* minimum movement distance */
 
+        public const int BACK_MOST_PRIORITY = 4;    /* priority value of back most priority */
+
 
         /* ------------------------ Inventory item constants --------------------------- */
 
