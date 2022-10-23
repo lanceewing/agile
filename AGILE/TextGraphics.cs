@@ -81,7 +81,6 @@ namespace AGILE
         private int maxLength;
 
         private char escapeChar = '\\';         /* the escape character */
-        private char unknownChar = '\u003f';    /* unknown characters shows up as '?' */
 
         /// <summary>
         /// The GameState class holds all of the data and state for the Game currently 
@@ -695,7 +694,7 @@ namespace AGILE
             maxLength = 0;
 
             if (str != null)
-            {
+            {                
                 // Recursively expand/substitute references to other strings.
                 string processedMessage = ExpandReferences(str);
 
@@ -872,9 +871,9 @@ namespace AGILE
                             break;
                     }
                 }
-                else if (str[i] == unknownChar)
+                else if (i == 0 && str[i] == '?')
                 {
-                    // replace unprintable char to space
+                    // kq2 has some message that starts with a `?`. Replace that with space
                     output.Append(' ');
                 }
                 else
