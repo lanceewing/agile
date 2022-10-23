@@ -948,7 +948,8 @@ namespace AGILE
         /// <returns></returns>
         private short EffectiveY()
         {
-            return (FixedPriority ? (short)(state.PriorityBase + Math.Ceiling(((168.0 - state.PriorityBase) / 10.0f) * (Priority - 4)) - 1) : Y);
+            // IMPORTANT: When in fixed priority mode, it uses the "top" of the priority band, not the bottom, i.e. the "start" is the top.
+            return (FixedPriority ? (short)(state.PriorityBase + Math.Ceiling(((168.0 - state.PriorityBase) / 10.0f) * (Priority - 4 - 1))) : Y);
         }
 
         /// <summary>
