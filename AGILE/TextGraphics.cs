@@ -81,6 +81,7 @@ namespace AGILE
         private int maxLength;
 
         private char escapeChar = '\\';         /* the escape character */
+        private char unknownChar = '\u003f';    /* unknown characters shows up as '?' */
 
         /// <summary>
         /// The GameState class holds all of the data and state for the Game currently 
@@ -870,6 +871,11 @@ namespace AGILE
                         default: // ignore the second character.
                             break;
                     }
+                }
+                else if (str[i] == unknownChar)
+                {
+                    // replace unprintable char to space
+                    output.Append(' ');
                 }
                 else
                 {
