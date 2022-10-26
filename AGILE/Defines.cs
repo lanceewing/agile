@@ -144,6 +144,7 @@ namespace AGILE
 
         public const int BACK_MOST_PRIORITY = 4;    /* priority value of back most priority */
 
+
         /* ------------------------ Inventory item constants --------------------------- */
 
         public const int LIMBO = 0;                 /* room number of objects that are gone */
