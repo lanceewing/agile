@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -79,6 +80,55 @@ namespace AGILE
             this.Activate();
         }
 
+        /// <summary>
+        /// Dynamically adjusts the GameScreen size based on the new AgileForm size. Takes into
+        /// consideration the current aspect ratio correction setting when doing this. Works for both
+        /// fullscreen mode and window mode.
+        /// </summary>
+        private void AdjustGameScreen()
+        {
+            if (this.screen != null)
+            {
+                if (cntxtMenuStretchMode.Checked)
+                {
+                    // Stretch mode, so fill the window completely (i.e. stretch to fit).
+                    screen.Location = new Point(0, 0);
+                    screen.Dock = DockStyle.Fill;
+                }
+                else 
+                {
+                    // Aspect correction on uses 4:3, and off uses 8:5.
+                    int ratioWidth = (cntxtMenuAspectCorrectionOn.Checked ? 4 : 8);
+                    int ratioHeight = (cntxtMenuAspectCorrectionOn.Checked ? 3 : 5);
+
+                    // Stops GameScreen filling screen (this is mainly to support fullscreen mode)
+                    screen.Dock = DockStyle.None;
+
+                    if (Screen.FromControl(this).Bounds.Height >= ((ClientSize.Width / ratioWidth) * ratioHeight))
+                    {
+                        // GameScreen fills whole width, adjusting height according to aspect ratio.
+                        screen.Size = new Size(ClientSize.Width, ((ClientSize.Width / ratioWidth) * ratioHeight));
+                    }
+                    else
+                    {
+                        // GameScreen fills whole height, adjusting width according to aspect ratio.
+                        screen.Size = new Size(((ClientSize.Height / ratioHeight) * ratioWidth), ClientSize.Height);
+                    }
+
+                    // Center the GameScreen (this is mainly to support fullscreen mode)
+                    screen.Location = new Point(
+                        ClientSize.Width / 2 - screen.Size.Width / 2,
+                        ClientSize.Height / 2 - screen.Size.Height / 2);
+
+                    // Crop windown to match GameScreen size, but only if not in full screen of maximised!!
+                    if (!fullScreen && (this.WindowState != FormWindowState.Maximized))
+                    {
+                        ClientSize = this.screen.Size;
+                    }
+                }
+            }
+        }
+
         #region Form Events
 
         /// <summary>
@@ -96,6 +146,8 @@ namespace AGILE
             if (!Properties.Settings.Default.AgileFormSize.IsEmpty)
                 this.Size = Properties.Settings.Default.AgileFormSize;
 
+            AdjustGameScreen();
+
             #endregion Load Screen Metrics
 
         }
@@ -111,13 +163,26 @@ namespace AGILE
 
             #region Save Screen Metrics
 
-            // Save screen metrics
-            Properties.Settings.Default.AgileFormLocation = this.Location;
-            Properties.Settings.Default.AgileFormSize = this.Size;
+            // Save screen metrics (not for full screen, as this isn't working too well)
+            if (!fullScreen)
+            {
+                Properties.Settings.Default.AgileFormLocation = this.Location;
+                Properties.Settings.Default.AgileFormSize = this.Size;
+            }
 
             #endregion Save Screen Metrics
 
             Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// Adjusts the GameScreen size based on the new AgileForm size.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AgileForm_Resize(object sender, System.EventArgs e)
+        {
+            AdjustGameScreen();
         }
 
         #endregion Form Events
@@ -145,20 +210,22 @@ namespace AGILE
         /// </summary>
         private void ToggleFullscreen()
         {
+            // Important! We toggle the fullScreen flag first, so that the AdjustGameScreen method
+            // has the correct value when it is responding to the changes to maximised window.
+            this.fullScreen = !this.fullScreen;
+
             if (this.fullScreen)
-            {
-                this.FormBorderStyle = FormBorderStyle.Sizable;
-                this.WindowState = this.windowStateBeforeFullscreen;
-            }
-            else
             {
                 this.windowStateBeforeFullscreen = this.WindowState;
                 this.WindowState = FormWindowState.Normal;
                 this.FormBorderStyle = FormBorderStyle.None;
                 this.WindowState = FormWindowState.Maximized;
             }
-
-            this.fullScreen = !this.fullScreen;
+            else
+            {
+                this.FormBorderStyle = FormBorderStyle.Sizable;
+                this.WindowState = this.windowStateBeforeFullscreen;
+            }
         }
 
         #endregion Key events
@@ -205,13 +272,11 @@ namespace AGILE
         /// <param name="
         private void cntxtMenuAspectCorrectionOn_Click(object sender, EventArgs e)
         {
-            if (!this.fullScreen)
-                this.ClientSize = new System.Drawing.Size(this.Width, ((this.Width / 4) * 3));
+            cntxtMenuStretchMode.Checked = false;
+            cntxtMenuAspectCorrectionOff.Checked = false;
+            cntxtMenuAspectCorrectionOn.Checked = true;
 
-            if (cntxtMenuAspectCorrectionOn.Checked == true)
-                cntxtMenuAspectCorrectionOff.Checked = false;
-            else
-                cntxtMenuAspectCorrectionOff.Checked = true;
+            AdjustGameScreen();
         }
 
         /// <summary>
@@ -221,13 +286,25 @@ namespace AGILE
         /// <param name="e"></param>
         private void cntxtMenuAspectCorrectionOff_Click(object sender, EventArgs e)
         {
-            if (!this.fullScreen)
-                this.ClientSize = new System.Drawing.Size(this.Width, ((this.Width / 8) * 5));
+            cntxtMenuStretchMode.Checked = false;
+            cntxtMenuAspectCorrectionOff.Checked = true;
+            cntxtMenuAspectCorrectionOn.Checked = false;
 
-            if (cntxtMenuAspectCorrectionOff.Checked == true)
-                cntxtMenuAspectCorrectionOn.Checked = false;
-            else
-                cntxtMenuAspectCorrectionOn.Checked = true;
+            AdjustGameScreen();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cntxtMenuStretchMode_Click(object sender, EventArgs e)
+        {
+            cntxtMenuStretchMode.Checked = true;
+            cntxtMenuAspectCorrectionOff.Checked = false;
+            cntxtMenuAspectCorrectionOn.Checked = false;
+
+            AdjustGameScreen();
         }
 
         #endregion Context Menu
