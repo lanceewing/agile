@@ -344,7 +344,7 @@ namespace AGILE
                 }
             }
 
-            byte[] textBytes = Encoding.ASCII.GetBytes(text);
+            byte[] textBytes = Encoding.GetEncoding(437).GetBytes(text);
 
             for (int charPos = 0; charPos < textBytes.Length; charPos++)
             {
