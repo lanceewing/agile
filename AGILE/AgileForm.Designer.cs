@@ -35,6 +35,7 @@
             this.cntxtMenuAspectCorrectionOn = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuAspectCorrectionOff = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuStretchMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.cntxtMenuFullScreen = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,11 +43,12 @@
             // 
             this.cntxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cntxtMenuOpenUserConfig,
+            this.cntxtMenuFullScreen,
             this.cntxtMenuAspectCorrectionOn,
             this.cntxtMenuAspectCorrectionOff,
             this.cntxtMenuStretchMode});
             this.cntxtMenu.Name = "cntxtMenu";
-            this.cntxtMenu.Size = new System.Drawing.Size(190, 92);
+            this.cntxtMenu.Size = new System.Drawing.Size(190, 136);
             this.cntxtMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cntxtMenu_Opening);
             // 
             // cntxtMenuOpenUserConfig
@@ -82,12 +84,20 @@
             this.cntxtMenuStretchMode.Text = "Stretch Mode";
             this.cntxtMenuStretchMode.Click += new System.EventHandler(this.cntxtMenuStretchMode_Click);
             // 
+            // cntxtMenuFullScreen
+            // 
+            this.cntxtMenuFullScreen.CheckOnClick = true;
+            this.cntxtMenuFullScreen.Name = "cntxtMenuFullScreen";
+            this.cntxtMenuFullScreen.Size = new System.Drawing.Size(189, 22);
+            this.cntxtMenuFullScreen.Text = "Full Screen";
+            this.cntxtMenuFullScreen.Click += new System.EventHandler(this.cntxtMenuFullScreen_Click);
+            // 
             // AgileForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(960, 600);
             this.BackColor = System.Drawing.SystemColors.Desktop;
+            this.ClientSize = new System.Drawing.Size(960, 600);
             this.ContextMenuStrip = this.cntxtMenu;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AgileForm";
@@ -109,6 +119,7 @@
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuAspectCorrectionOn;
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuAspectCorrectionOff;
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuStretchMode;
+        private System.Windows.Forms.ToolStripMenuItem cntxtMenuFullScreen;
     }
 }
 

@@ -938,7 +938,7 @@ namespace AGILE
         /// <returns></returns>
         private byte CalculatePriority(int y)
         {
-            return (byte)(y < state.PriorityBase ? Defines.BACK_MOST_PRIORITY : (byte)(((y - state.PriorityBase) / ((168.0 - state.PriorityBase) / 10.0f)) + 5));
+            return (byte)(y < state.PriorityBase ? 4 : (byte)(((y - state.PriorityBase) / ((168.0 - state.PriorityBase) / 10.0f)) + 5));
         }
 
         /// <summary>
@@ -949,7 +949,7 @@ namespace AGILE
         private short EffectiveY()
         {
             // IMPORTANT: When in fixed priority mode, it uses the "top" of the priority band, not the bottom, i.e. the "start" is the top.
-            return (FixedPriority ? (short)(state.PriorityBase + Math.Ceiling(((168.0 - state.PriorityBase) / 10.0f) * (Priority - Defines.BACK_MOST_PRIORITY - 1))) : Y);
+            return (FixedPriority ? (short)(state.PriorityBase + Math.Ceiling(((168.0 - state.PriorityBase) / 10.0f) * (Priority - 4 - 1))) : Y);
         }
 
         /// <summary>

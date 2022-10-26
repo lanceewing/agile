@@ -49,42 +49,6 @@ namespace AGILE.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string lastBrowsePath {
-            get {
-                return ((string)(this["lastBrowsePath"]));
-            }
-            set {
-                this["lastBrowsePath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size noAspectSize {
-            get {
-                return ((global::System.Drawing.Size)(this["noAspectSize"]));
-            }
-            set {
-                this["noAspectSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string xmlEditPath {
-            get {
-                return ((string)(this["xmlEditPath"]));
-            }
-            set {
-                this["xmlEditPath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
         public global::System.Drawing.Point OptionsFrmLocation {
             get {
@@ -92,6 +56,54 @@ namespace AGILE.Properties {
             }
             set {
                 this["OptionsFrmLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string xmlEditor {
+            get {
+                return ((string)(this["xmlEditor"]));
+            }
+            set {
+                this["xmlEditor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool aspect {
+            get {
+                return ((bool)(this["aspect"]));
+            }
+            set {
+                this["aspect"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool fullScreen {
+            get {
+                return ((bool)(this["fullScreen"]));
+            }
+            set {
+                this["fullScreen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastBrowsePath {
+            get {
+                return ((string)(this["lastBrowsePath"]));
+            }
+            set {
+                this["lastBrowsePath"] = value;
             }
         }
     }
