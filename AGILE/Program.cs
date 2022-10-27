@@ -19,6 +19,36 @@ namespace AGILE
             Boolean stillChoosingGame = true, firstTime = true;
             string gameFolder = (args.Length > 0? args[0] : Directory.GetCurrentDirectory());
             AGI.Game game = null;
+            string prompt = null;
+
+            // Pass path argument for game folder
+            foreach (string arg in args)
+            {
+                if (Directory.Exists(arg))
+                {
+                    gameFolder = arg;
+                    prompt = $"No AGI game was found in {gameFolder}";
+
+                    try
+                    {
+                        game = new AGI.Game(gameFolder);
+                        stillChoosingGame = false;
+                    }
+                    catch { }
+
+                    if (game != null)
+                    {
+                        Application.Run(new AgileForm(game));
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(prompt, "No AGI Game Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                        gameFolder = null;
+                    }
+                }
+            }
 
             while (stillChoosingGame)
             {
@@ -32,7 +62,7 @@ namespace AGILE
                     // There isn't an AGI game in the current folder, so ask player to choose a different folder.
                     using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                     {
-                        string prompt = "Please choose a folder containing an AGI game.";
+                        prompt = "Please choose a folder containing an AGI game.";
                         
                         folderDialog.ShowNewFolderButton = false;
                         folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;

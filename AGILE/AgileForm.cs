@@ -1,4 +1,5 @@
 ﻿using AGI;
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Configuration;
@@ -28,7 +29,7 @@ namespace AGILE
         private Boolean fullScreen = false;
         private FormWindowState windowStateBeforeFullscreen;
 
-        private static string xmlEditPath = Properties.Settings.Default.xmlEditPath;
+        private static string xmlEditor = Properties.Settings.Default.xmlEditor;
 
         /// <summary>
         /// The number of TimeSpan Ticks to achieve 60 times a second.
@@ -150,6 +151,21 @@ namespace AGILE
 
             #endregion Load Screen Metrics
 
+            // Get last fullscreen state
+            if (Properties.Settings.Default.fullScreen == true)
+            {
+                ToggleFullscreen();
+                //cntxtMenuFullScreen_Click(null, null);
+                cntxtMenuFullScreen.Checked = true;
+            }
+            else if (Properties.Settings.Default.fullScreen == false)
+            {
+                cntxtMenuFullScreen.Checked = false;
+            }
+
+            // Set aspect correction preference
+            cntxtMenuAspectCorrectionOn.Checked = Properties.Settings.Default.aspect;
+            cntxtMenuAspectCorrectionOff.Checked = !Properties.Settings.Default.aspect;
         }
 
         /// <summary>
@@ -161,16 +177,21 @@ namespace AGILE
         {
             interpreter.ShutdownSound();
 
-            #region Save Screen Metrics
-
-            // Save screen metrics (not for full screen, as this isn't working too well)
-            if (!fullScreen)
+            if (this.fullScreen)
             {
+                Properties.Settings.Default.fullScreen = true;
+            }
+            else
+            {
+                Properties.Settings.Default.fullScreen = false;
+
+                // Save Screen Metrics if not full screen
                 Properties.Settings.Default.AgileFormLocation = this.Location;
                 Properties.Settings.Default.AgileFormSize = this.Size;
             }
 
-            #endregion Save Screen Metrics
+            // Save aspect correction preference
+            Properties.Settings.Default.aspect = cntxtMenuAspectCorrectionOn.Checked;
 
             Properties.Settings.Default.Save();
         }
@@ -238,31 +259,50 @@ namespace AGILE
         /// </summary>
         private void cntxtMenu_Opening(object sender, CancelEventArgs e) { }
 
+        /// <summary>
+        /// Switch full screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cntxtMenuFullScreen_Click(object sender, EventArgs e)
+        {
+            ToggleFullscreen();
+
+            cntxtMenuFullScreen.Checked = this.fullScreen;
+        }
+        private static bool nullXML = false;
         private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
-            string configPath = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath) + "\\user.config";
+            xmlEditor = Properties.Settings.Default.xmlEditor;
 
-            if (!System.IO.File.Exists(xmlEditPath))
+            string configFile = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath) + "\\user.config";
+
+            //if (Properties.Settings.Default.xmlEditor == null || !System.IO.File.Exists(Properties.Settings.Default.xmlEditor))
+            if (!System.IO.File.Exists(Properties.Settings.Default.xmlEditor))
             {
-                MessageBox.Show("Please set an editor in the options dialog and try again.", "xmlEditor not found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                OptionsFrm optionsFrm = new OptionsFrm();
-                optionsFrm.Show();
+                GetXMLEditor();
+            }
+
+            if (System.IO.File.Exists(xmlEditor))
+            {
+                OpenConfig();
                 return;
             }
 
-            if (!System.IO.File.Exists(xmlEditPath))
+            if (!System.IO.File.Exists(xmlEditor))
             {
-                //MessageBox.Show("Please set an editor in the options dialog and try again.", "xmlEditor not found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                //OptionsFrm optionsFrm = new OptionsFrm();
-                //optionsFrm.Show();
-                //return;
-            }
+                DialogResult result = MessageBox.Show("Please select an XML editor in the options dialog to proceed.",
+                    "XML Editor Not Found!", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                if (result == DialogResult.OK)
+                {
+                    OptionsFrm.nullXML = true;
 
-            try
-            {
-                Process.Start(xmlEditPath, configPath);
+                    OptionsFrm optionsFrm = new OptionsFrm();
+                    optionsFrm.Show();
+                }
+                else
+                    return;
             }
-            catch { }
         }
 
         /// <summary>
@@ -308,6 +348,51 @@ namespace AGILE
         }
 
         #endregion Context Menu
+
+        /// <summary>
+        /// Open user config file
+        /// </summary>
+        public static void OpenConfig()
+        {
+            xmlEditor = Properties.Settings.Default.xmlEditor;
+
+            string configFile = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath) + "\\user.config";
+
+            try
+            {
+                Process.Start(xmlEditor, configFile);
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Get default XML editor
+        /// </summary>
+        public static void GetXMLEditor()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("xmlfile\\shell\\open\\command"))
+                {
+                    if (key != null)
+                    {
+                        Object obj = key.GetValue("");
+                        if (obj != null)
+                        {
+                            xmlEditor = obj.ToString().Split(new string[] { "\" /verb" }, StringSplitOptions.None)[0];
+                            xmlEditor = xmlEditor.Split(new string[] { "\"" }, StringSplitOptions.None)[1];
+
+                            if (File.Exists(xmlEditor))
+                            {
+                                Properties.Settings.Default.xmlEditor = xmlEditor;
+                                Properties.Settings.Default.Save();
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }// (Exception ex) {}
+        }
 
         /// <summary>
         /// Processes the Tick event of the Timer, which we've requested to be triggered 60 

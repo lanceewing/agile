@@ -35,8 +35,8 @@
             this.cancelBtn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.browseXMLEditBtn = new System.Windows.Forms.Button();
-            this.xmlEditPathTxtBox = new System.Windows.Forms.TextBox();
+            this.browseXMLEditorBtn = new System.Windows.Forms.Button();
+            this.xmlEditorTxtBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -83,8 +83,8 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Controls.Add(this.browseXMLEditBtn);
-            this.groupBox1.Controls.Add(this.xmlEditPathTxtBox);
+            this.groupBox1.Controls.Add(this.browseXMLEditorBtn);
+            this.groupBox1.Controls.Add(this.xmlEditorTxtBox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
@@ -112,30 +112,30 @@
             this.textBox1.TabStop = false;
             this.textBox1.Text = "Select external XML editor for manually editing save files.";
             // 
-            // browseXMLEditBtn
+            // browseXMLEditorBtn
             // 
-            this.browseXMLEditBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.browseXMLEditBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.browseXMLEditBtn.Location = new System.Drawing.Point(327, 50);
-            this.browseXMLEditBtn.Name = "browseXMLEditBtn";
-            this.browseXMLEditBtn.Size = new System.Drawing.Size(27, 23);
-            this.browseXMLEditBtn.TabIndex = 1;
-            this.browseXMLEditBtn.Text = "...";
-            this.toolTip.SetToolTip(this.browseXMLEditBtn, "Browse to select default external XML editor");
-            this.browseXMLEditBtn.UseVisualStyleBackColor = true;
-            this.browseXMLEditBtn.Click += new System.EventHandler(this.browseXMLEditBtn_Click);
+            this.browseXMLEditorBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseXMLEditorBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.browseXMLEditorBtn.Location = new System.Drawing.Point(327, 50);
+            this.browseXMLEditorBtn.Name = "browseXMLEditorBtn";
+            this.browseXMLEditorBtn.Size = new System.Drawing.Size(27, 23);
+            this.browseXMLEditorBtn.TabIndex = 1;
+            this.browseXMLEditorBtn.Text = "...";
+            this.toolTip.SetToolTip(this.browseXMLEditorBtn, "Browse to select default external XML editor");
+            this.browseXMLEditorBtn.UseVisualStyleBackColor = true;
+            this.browseXMLEditorBtn.Click += new System.EventHandler(this.browseXMLEditorBtn_Click);
             // 
-            // xmlEditPathTxtBox
+            // xmlEditorTxtBox
             // 
-            this.xmlEditPathTxtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.xmlEditorTxtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.xmlEditPathTxtBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xmlEditPathTxtBox.Location = new System.Drawing.Point(6, 52);
-            this.xmlEditPathTxtBox.Name = "xmlEditPathTxtBox";
-            this.xmlEditPathTxtBox.Size = new System.Drawing.Size(315, 20);
-            this.xmlEditPathTxtBox.TabIndex = 0;
-            this.toolTip.SetToolTip(this.xmlEditPathTxtBox, "Sets path to preferred external XML editor");
-            this.xmlEditPathTxtBox.TextChanged += new System.EventHandler(this.xmlEditPathTxtBox_TextChanged);
+            this.xmlEditorTxtBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xmlEditorTxtBox.Location = new System.Drawing.Point(6, 52);
+            this.xmlEditorTxtBox.Name = "xmlEditorTxtBox";
+            this.xmlEditorTxtBox.Size = new System.Drawing.Size(315, 20);
+            this.xmlEditorTxtBox.TabIndex = 0;
+            this.toolTip.SetToolTip(this.xmlEditorTxtBox, "Sets path to preferred external XML editor");
+            this.xmlEditorTxtBox.TextChanged += new System.EventHandler(this.xmlEditorTxtBox_TextChanged);
             // 
             // OptionsFrm
             // 
@@ -168,8 +168,8 @@
         private System.Windows.Forms.Button cancelBtn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button browseXMLEditBtn;
-        private System.Windows.Forms.TextBox xmlEditPathTxtBox;
+        private System.Windows.Forms.Button browseXMLEditorBtn;
+        private System.Windows.Forms.TextBox xmlEditorTxtBox;
         private System.Windows.Forms.ToolTip toolTip;
 
     }

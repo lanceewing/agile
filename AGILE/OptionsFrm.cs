@@ -15,7 +15,9 @@ namespace AGILE
         //public static string assemblyPath = Path.GetDirectoryName(assemblyEXE).Replace("%20", " ");
         //public static string assemblyEXEName = Path.GetFileName(assemblyPath);
 
-        private static string xmlEditPath = Properties.Settings.Default.xmlEditPath;
+        private static string xmlEditor = Properties.Settings.Default.xmlEditor;
+        private static string currentXMLEditor = null;
+        public static bool nullXML = false;
         public static bool nullCheckCancel = false;
 
         //AgileForm agileForm = (AgileForm)Application.OpenForms["AgileForm"];
@@ -47,11 +49,13 @@ namespace AGILE
 
             #endregion Load Screen Metrics
 
+            currentXMLEditor = Properties.Settings.Default.xmlEditor;
+
             // Populate controls
-            if (File.Exists(Properties.Settings.Default.xmlEditPath))
+            if (File.Exists(Properties.Settings.Default.xmlEditor))
             {
-                xmlEditPath = Properties.Settings.Default.xmlEditPath;
-                xmlEditPathTxtBox.Text = xmlEditPath;
+                xmlEditor = Properties.Settings.Default.xmlEditor;
+                xmlEditorTxtBox.Text = xmlEditor;
             }
         }
 
@@ -72,19 +76,21 @@ namespace AGILE
 
         #endregion Form Events
 
+        #region paths
+
         /// <summary>
         /// Sets/displays path to selected XML editor
         /// </summary>
-        private void xmlEditPathTxtBox_TextChanged(object sender, EventArgs e)
+        private void xmlEditorTxtBox_TextChanged(object sender, EventArgs e)
         {
-            if (Directory.Exists(xmlEditPathTxtBox.Text))
-                xmlEditPath = xmlEditPathTxtBox.Text;
+            if (Directory.Exists(xmlEditorTxtBox.Text))
+                xmlEditor = xmlEditorTxtBox.Text;
         }
 
         /// <summary>
         /// Opens browse dialog to select prefered XML editor
         /// </summary>
-        private void browseXMLEditBtn_Click(object sender, EventArgs e)
+        private void browseXMLEditorBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDlg = new OpenFileDialog();
             openFileDlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
@@ -95,16 +101,18 @@ namespace AGILE
 
             if (File.Exists(openFileDlg.FileName))
             {
-                xmlEditPath = openFileDlg.FileName;
-                xmlEditPathTxtBox.Text = openFileDlg.FileName;
+                xmlEditor = openFileDlg.FileName;
+                xmlEditorTxtBox.Text = openFileDlg.FileName;
             }
             else
             {
-                string xmlEditName = Path.GetFileName(xmlEditPath);
+                string xmlEditName = Path.GetFileName(xmlEditor);
                 MessageBox.Show(xmlEditName + "'cannot be found. Please select a valid XML editor.", "XML Editor Not Found!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        #endregion paths
 
         #region Button Events
 
@@ -153,14 +161,14 @@ namespace AGILE
             #region null checks
 
             // Check selected all projects path
-            if (File.Exists(xmlEditPathTxtBox.Text))
+            if (File.Exists(xmlEditorTxtBox.Text))
             {
-                xmlEditPath = xmlEditPathTxtBox.Text;
-                Properties.Settings.Default.xmlEditPath = xmlEditPath;
+                xmlEditor = xmlEditorTxtBox.Text;
+                Properties.Settings.Default.xmlEditor = xmlEditor;
             }
             else
             {
-                MessageBox.Show("Please select your prefered XML editor folder.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select your prefered XML editor.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 // Prevent form from closing on "OK" if path null or invalid
                 nullCheckCancel = true;
@@ -171,13 +179,16 @@ namespace AGILE
 
             #region Paths
 
-            xmlEditPath = xmlEditPathTxtBox.Text;
-            if (File.Exists(xmlEditPath))
-                Properties.Settings.Default.xmlEditPath = xmlEditPath;
+            xmlEditor = xmlEditorTxtBox.Text;
+            if (File.Exists(xmlEditor))
+                Properties.Settings.Default.xmlEditor = xmlEditor;
 
             #endregion Paths
 
             Properties.Settings.Default.Save();
+
+            if (currentXMLEditor != xmlEditorTxtBox.Text)
+                AgileForm.OpenConfig();
         }
 
         #endregion Extra Methods
