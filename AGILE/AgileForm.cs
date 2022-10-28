@@ -41,11 +41,23 @@ namespace AGILE
         /// <summary>
         /// Constructor for AgileForm.
         /// </summary>
-        /// <param name="game">The Game from which we'll get all of the game data.</param>
-        public AgileForm(Game game)
+        /// <param name="args">Command line arguments</param>
+        public AgileForm(string[] args)
         {
             InitializeComponent();
+            this.screen = new GameScreen();
+            this.Controls.Add(screen);
+            this.Show();
+            this.Activate();
+            this.StartGame(this.SelectGame(args));
+        }
 
+        /// <summary>
+        /// Starts the given AGI Game.
+        /// </summary>
+        /// <param name="game">The Game from which we'll get all of the game data.</param>
+        private void StartGame(Game game)
+        {
             // Register the key event handlers for KeyUp, KeyDown, and KeyPress.
             UserInput userInput = new UserInput();
             this.KeyPreview = true;
@@ -57,10 +69,6 @@ namespace AGILE
             Detection gameDetection = new Detection(game);
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
-
-            // Create the AGI screen and add to the Form.
-            this.screen = new GameScreen();
-            this.Controls.Add(screen);
 
             // Create the Interpreter to run this Game.
             this.interpreter = new Interpreter(game, userInput, screen.Pixels);
@@ -76,9 +84,124 @@ namespace AGILE
             this.stopWatch = Stopwatch.StartNew();
             this.lastTime = stopWatch.Elapsed;
             this.deltaTime = TimeSpan.Zero;
+        }
 
-            this.Show();
-            this.Activate();
+        /// <summary>
+        /// Attempts to load an AGI game from the given game folder.
+        /// </summary>
+        /// <param name="gameFolder">The folder to attempt to load the AGI game from.</param>
+        /// <returns>The Game from which we'll get all of the game data.</returns>
+        private Game LoadGame(string gameFolder)
+        {
+            // Use a dummy TextGraphics instance to render the "Loading" text in grand AGI fashion.
+            TextGraphics textGraphics = new TextGraphics(screen.Pixels, null, null);
+            try
+            {
+                textGraphics.DrawString(screen.Pixels, "Loading... Please wait", 72, 88, 15, 0);
+                screen.Render();
+                this.Refresh();
+                return new AGI.Game(gameFolder);
+            }
+            finally
+            {
+                textGraphics.ClearLines(0, 24, 0);
+                screen.Render();
+                this.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Selects an AGI game to run. Starts by looking for a command line parameter. If there 
+        /// is a single command line parameter provided, it will use its value as the directory 
+        /// in which to look for the AGI game to run. If the command line parameter is not provided, 
+        /// then it looks in the current working directory. If it isn't able to find an AGI game in 
+        /// that directory, then it will open a Folder Browser Dialog for you to choose the folder 
+        /// that contains the AGI game. 
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <returns>The Game from which we'll get all of the game data.</returns>
+        private Game SelectGame(string[] args)
+        {
+            // Start by attempting to run with command line argument or the current folder.
+            Boolean stillChoosingGame = true, firstTime = true;
+            string gameFolder = (args.Length > 0 ? args[0] : Directory.GetCurrentDirectory());
+            AGI.Game game = null;
+            string prompt = null;
+
+            // Pass path argument for game folder
+            foreach (string arg in args)
+            {
+                if (Directory.Exists(arg))
+                {
+                    gameFolder = arg;
+                    prompt = $"No AGI game was found in {gameFolder}";
+
+                    try
+                    {
+                        game = LoadGame(gameFolder);
+                        stillChoosingGame = false;
+                    }
+                    catch { }
+
+                    if (game != null)
+                    {
+                        return game;
+                    }
+                    else
+                    {
+                        MessageBox.Show(prompt, "No AGI Game Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                        gameFolder = null;
+                    }
+                }
+            }
+
+            while (stillChoosingGame)
+            {
+                try
+                {
+                    game = LoadGame(gameFolder);
+                    stillChoosingGame = false;
+                }
+                catch (Exception)
+                {
+                    // There isn't an AGI game in the current folder, so ask player to choose a different folder.
+                    using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                    {
+                        prompt = "Please choose a folder containing an AGI game.";
+
+                        folderDialog.ShowNewFolderButton = false;
+                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                        folderDialog.ShowNewFolderButton = false;
+                        folderDialog.Description = prompt;
+                        folderDialog.SelectedPath = Properties.Settings.Default.lastBrowsePath;
+
+                        if (!firstTime)
+                        {
+                            prompt = $"No AGI game was found in {gameFolder}\n\n{prompt}";
+                            folderDialog.SelectedPath = gameFolder;
+                            folderDialog.SelectedPath = Properties.Settings.Default.lastBrowsePath;
+                            Properties.Settings.Default.Save();
+                        }
+
+                        DialogResult result = folderDialog.ShowDialog(Control.FromHandle(this.Handle));
+                        if (result == DialogResult.OK)
+                        {
+                            Properties.Settings.Default.lastBrowsePath = folderDialog.SelectedPath;
+                            Properties.Settings.Default.Save();
+
+                            gameFolder = folderDialog.SelectedPath;
+                            firstTime = false;
+                        }
+                        else if (result == DialogResult.Cancel)
+                        {
+                            Environment.Exit(0);
+                        }
+                    }
+                }
+            }
+
+            return game;
         }
 
         /// <summary>
