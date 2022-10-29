@@ -249,9 +249,7 @@ namespace AGILE
             CurrentInput.Clear();
             LastInput = "";
             SimpleName = "";
-            // Do not clear this mapping. There is an issue in KQ1 after restarting the game
-            // the KeyToControllerMap will never be repopulated
-            // KeyToControllerMap.Clear();
+            ClearControllers();
             MenuEnabled = true;
             HoldKey = false;
 
