@@ -275,7 +275,6 @@ namespace AGILE
             if (Properties.Settings.Default.fullScreen == true)
             {
                 ToggleFullscreen();
-                //cntxtMenuFullScreen_Click(null, null);
                 cntxtMenuFullScreen.Checked = true;
             }
             else if (Properties.Settings.Default.fullScreen == false)
@@ -368,6 +367,9 @@ namespace AGILE
                 this.FormBorderStyle = FormBorderStyle.Sizable;
                 this.WindowState = this.windowStateBeforeFullscreen;
             }
+
+            // Keep context menu in sync.
+            cntxtMenuFullScreen.Checked = this.fullScreen;
         }
 
         #endregion Key events
