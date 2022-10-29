@@ -170,19 +170,16 @@ namespace AGILE
                     {
                         prompt = "Please choose a folder containing an AGI game.";
 
-                        folderDialog.ShowNewFolderButton = false;
-                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
-                        folderDialog.ShowNewFolderButton = false;
-                        folderDialog.Description = prompt;
-                        folderDialog.SelectedPath = Properties.Settings.Default.lastBrowsePath;
-
                         if (!firstTime)
                         {
                             prompt = $"No AGI game was found in {gameFolder}\n\n{prompt}";
-                            folderDialog.SelectedPath = gameFolder;
-                            folderDialog.SelectedPath = Properties.Settings.Default.lastBrowsePath;
-                            Properties.Settings.Default.Save();
                         }
+
+                        folderDialog.ShowNewFolderButton = false;
+                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                        folderDialog.Description = prompt;
+                        folderDialog.SelectedPath = !String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) ?
+                                Properties.Settings.Default.lastBrowsePath : gameFolder;
 
                         DialogResult result = folderDialog.ShowDialog(Control.FromHandle(this.Handle));
                         if (result == DialogResult.OK)
