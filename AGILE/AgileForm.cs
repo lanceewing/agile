@@ -286,6 +286,7 @@ namespace AGILE
             // Set aspect correction preference
             cntxtMenuAspectCorrectionOn.Checked = Properties.Settings.Default.aspect;
             cntxtMenuAspectCorrectionOff.Checked = !Properties.Settings.Default.aspect;
+            AdjustGameScreen();
         }
 
         /// <summary>
