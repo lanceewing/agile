@@ -1,4 +1,4 @@
-﻿using AGI;
+using AGI;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
