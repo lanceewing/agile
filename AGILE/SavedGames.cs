@@ -1001,7 +1001,6 @@ namespace AGILE
             // A transcript of events leading to the current state in the current room.
             int scriptsOffset = objectsOffset + 2 + objectsLength;
             int scriptsLength = (savedGameData[scriptsOffset + 0] + (savedGameData[scriptsOffset + 1] << 8));
-            int numOfScripts = (scriptsLength / 2);
             // Each script entry is two unsigned bytes long:
             // UBYTE action;
             // UBYTE who;
@@ -1036,7 +1035,7 @@ namespace AGILE
             // 03 0d load.sound  0x0D
             // etc...
             state.ScriptBuffer.InitScript();
-            for (int i = 0; i < numOfScripts; i++)
+            for (int i = 0; i < scriptEntryCount; i++)
             {
                 int scriptOffset = scriptsOffset + 2 + (i * 2);
                 int action = savedGameData[scriptOffset + 0];
