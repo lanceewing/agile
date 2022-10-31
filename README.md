@@ -36,9 +36,9 @@ AGILE starts by looking for a command line parameter. If there is a single comma
 
 ## Credits 
 
-All the source code for the AGILE interpreter itself, as included in this github repo, is written by me (Lance Ewing).
+All the original source code for the AGILE interpreter itself, as included in this github repo, is written by Lance Ewing. Bug fixes and enhancements have been contributed by Mark Yu and Andrew Branscom.
 
-AGILE makes use of an AGILibrary written by various authors, including me, but as the original repo for that is currently private and not mine, the AGILE repo here includes only the compiled DLL for that library. The AGILibrary was originally from the Visual AGI project, which means it began life with Joakim Möller and Gustaf Wennerholm. Others to work on it since then are Andrew Branscom and Jeremiah Nellis. When AGILE began its life in December 2016, the AGILibrary didn't have support for the LOGIC or SOUND resource types, so part of my work included adding support to decode those resource types to the AGILibrary.
+AGILE makes use of an AGILibrary written by various authors, but as the original repo for that is currently private and not mine, the AGILE repo here includes only the compiled DLL for that library. The AGILibrary was originally from the Visual AGI project, which means it began life with Joakim Möller and Gustaf Wennerholm. Others to work on it since then are Andrew Branscom, Jeremiah Nellis and Lance Ewing (AGILE author). When AGILE began its life in December 2016, the AGILibrary didn't have support for the LOGIC or SOUND resource types, so part of my work included adding support to decode those resource types to the AGILibrary.
 
 ## History
 
