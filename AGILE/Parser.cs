@@ -115,8 +115,9 @@ namespace AGILE
                 }
                 else if (!wordToMatch.Equals("a") && !wordToMatch.Equals("i"))
                 {
-                    // Unrecognised word. Stores the word, but not word number. Breaks out on first unrecognised word.
+                    // Unrecognised word. Stores the word, use ANYWORD (word number 1, place holder for any word)
                     state.RecognisedWords.Add(wordToMatch);
+                    this.RecognisedWordNumbers.Add(ANYWORD);
                     state.Vars[Defines.UNKNOWN_WORD] = (byte)(state.RecognisedWords.Count);
                     break;
                 }
