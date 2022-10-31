@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AGILE.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
@@ -10,6 +10,9 @@
     </Setting>
     <Setting Name="OptionsFrmLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="useSystemXMLDefault" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="xmlEditor" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

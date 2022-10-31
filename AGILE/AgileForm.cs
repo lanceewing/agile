@@ -1,4 +1,4 @@
-﻿using AGI;
+using AGI;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
@@ -28,6 +28,8 @@ namespace AGILE
 
         private Boolean fullScreen = false;
         private FormWindowState windowStateBeforeFullscreen;
+
+        private static bool nullXML = false;
 
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
 
@@ -216,7 +218,7 @@ namespace AGILE
                     screen.Location = new Point(0, 0);
                     screen.Dock = DockStyle.Fill;
                 }
-                else 
+                else
                 {
                     // Aspect correction on uses 4:3, and off uses 8:5.
                     int ratioWidth = (cntxtMenuAspectCorrectionOn.Checked ? 4 : 8);
@@ -266,8 +268,6 @@ namespace AGILE
 
             if (!Properties.Settings.Default.AgileFormSize.IsEmpty)
                 this.Size = Properties.Settings.Default.AgileFormSize;
-
-            AdjustGameScreen();
 
             #endregion Load Screen Metrics
 
@@ -323,7 +323,8 @@ namespace AGILE
         /// <param name="e"></param>
         private void AgileForm_Resize(object sender, System.EventArgs e)
         {
-            AdjustGameScreen();
+            if (this.WindowState != FormWindowState.Minimized)
+                AdjustGameScreen();
         }
 
         #endregion Form Events
@@ -343,7 +344,7 @@ namespace AGILE
             {
                 ToggleFullscreen();
                 e.Handled = true;
-            } 
+            }
         }
 
         /// <summary>
@@ -393,7 +394,12 @@ namespace AGILE
 
             cntxtMenuFullScreen.Checked = this.fullScreen;
         }
-        private static bool nullXML = false;
+        
+        /// <summary>
+        /// Opens config file for debugging
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
             xmlEditor = Properties.Settings.Default.xmlEditor;
@@ -426,6 +432,17 @@ namespace AGILE
                 else
                     return;
             }
+        }
+
+        /// <summary>
+        /// Opens Options form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cntxtMenuOptions_Click(object sender, EventArgs e)
+        {
+            OptionsFrm optionsFrm = new OptionsFrm();
+            optionsFrm.Show();
         }
 
         /// <summary>
@@ -485,7 +502,10 @@ namespace AGILE
             {
                 Process.Start(xmlEditor, configFile);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using System.IO;
+using Microsoft.Win32;
+using System.Reflection;
 
 namespace AGILE
 {
@@ -49,6 +51,8 @@ namespace AGILE
 
             #endregion Load Screen Metrics
 
+            systemXMLDefaultChkBox.Checked = Properties.Settings.Default.useSystemXMLDefault;
+
             currentXMLEditor = Properties.Settings.Default.xmlEditor;
 
             // Populate controls
@@ -57,6 +61,15 @@ namespace AGILE
                 xmlEditor = Properties.Settings.Default.xmlEditor;
                 xmlEditorTxtBox.Text = xmlEditor;
             }
+
+            // Get status of directory shellex 
+            RegistryKey rkSubKey = Registry.ClassesRoot.OpenSubKey("Directory\\shell\\AGILE", false);
+            if (rkSubKey == null)
+                runInAgileChkBox.Checked = false;
+            else
+                runInAgileChkBox.Checked = true;
+
+            xmlEditorTxtBox.Select(0, 0); ;
         }
 
         /// <summary>
@@ -68,7 +81,7 @@ namespace AGILE
 
             // Save screen metrics
             Properties.Settings.Default.OptionsFrmLocation = this.Location;
-            
+
             #endregion Save Screen Metrics
 
             Properties.Settings.Default.Save();
@@ -77,6 +90,36 @@ namespace AGILE
         #endregion Form Events
 
         #region paths
+
+        /// <summary>
+        /// Sets/displays if Agile is to use the system default XML editor or user specified
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void systemXMLDefaultChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("xmlfile\\shell\\open\\command"))
+                {
+                    if (key != null)
+                    {
+                        Object o = key.GetValue("");
+                        string xml = key.GetValue("").ToString();
+                        if (!String.IsNullOrEmpty(xml))
+                            xml = xml.Replace("\"", null);
+                        xml = xml.Split(new string[] { @".exe" }, StringSplitOptions.None)[0] + ".exe";
+                        if (File.Exists(xml))
+                            xmlEditorTxtBox.Text = xml;
+                        else
+                            xmlEditorTxtBox.Text = Properties.Settings.Default.xmlEditor;
+                    }
+                }
+            }
+            catch //*(Exception ex)*/
+            { }
+
+        }
 
         /// <summary>
         /// Sets/displays path to selected XML editor
@@ -113,6 +156,16 @@ namespace AGILE
         }
 
         #endregion paths
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void runInAgileChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
 
         #region Button Events
 
@@ -177,6 +230,8 @@ namespace AGILE
 
             #endregion null checks
 
+            Properties.Settings.Default.useSystemXMLDefault = systemXMLDefaultChkBox.Checked;
+
             #region Paths
 
             xmlEditor = xmlEditorTxtBox.Text;
@@ -184,6 +239,33 @@ namespace AGILE
                 Properties.Settings.Default.xmlEditor = xmlEditor;
 
             #endregion Paths
+
+            #region Set directory contextmenu
+
+            string appEXE = Assembly.GetEntryAssembly().Location;
+
+            // Set Registry entry to associate project files with the Game Archival Tool
+            if (runInAgileChkBox.Checked == true)
+            {
+                try
+                {
+                    Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE", "", "Run in AGILE");
+                    Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE", "Icon", Assembly.GetEntryAssembly().Location);
+
+                    Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE\command", "", @"""" + appEXE + @"""" + @" ""--working-dir"" ""%1""");
+                }
+                catch { }
+            }
+            else
+            {
+                try
+                {
+                    Registry.ClassesRoot.DeleteSubKeyTree(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE");
+                }
+                catch { }
+            }
+
+            #endregion Set directory contextmenu
 
             Properties.Settings.Default.Save();
 

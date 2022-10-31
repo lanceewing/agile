@@ -1,4 +1,4 @@
-﻿namespace AGILE
+namespace AGILE
 {
     partial class AgileForm
     {
@@ -32,10 +32,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AgileForm));
             this.cntxtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cntxtMenuOpenUserConfig = new System.Windows.Forms.ToolStripMenuItem();
+            this.cntxtMenuFullScreen = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuAspectCorrectionOn = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuAspectCorrectionOff = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuStretchMode = new System.Windows.Forms.ToolStripMenuItem();
-            this.cntxtMenuFullScreen = new System.Windows.Forms.ToolStripMenuItem();
+            this.cntxtMenuOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,12 +44,13 @@
             // 
             this.cntxtMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cntxtMenuOpenUserConfig,
+            this.cntxtMenuOptions,
             this.cntxtMenuFullScreen,
             this.cntxtMenuAspectCorrectionOn,
             this.cntxtMenuAspectCorrectionOff,
             this.cntxtMenuStretchMode});
             this.cntxtMenu.Name = "cntxtMenu";
-            this.cntxtMenu.Size = new System.Drawing.Size(190, 136);
+            this.cntxtMenu.Size = new System.Drawing.Size(190, 158);
             this.cntxtMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cntxtMenu_Opening);
             // 
             // cntxtMenuOpenUserConfig
@@ -57,6 +59,14 @@
             this.cntxtMenuOpenUserConfig.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuOpenUserConfig.Text = "Open User.&config";
             this.cntxtMenuOpenUserConfig.Click += new System.EventHandler(this.cntxtMenuOpenUserConfig_Click);
+            // 
+            // cntxtMenuFullScreen
+            // 
+            this.cntxtMenuFullScreen.CheckOnClick = true;
+            this.cntxtMenuFullScreen.Name = "cntxtMenuFullScreen";
+            this.cntxtMenuFullScreen.Size = new System.Drawing.Size(189, 22);
+            this.cntxtMenuFullScreen.Text = "Full Screen";
+            this.cntxtMenuFullScreen.Click += new System.EventHandler(this.cntxtMenuFullScreen_Click);
             // 
             // cntxtMenuAspectCorrectionOn
             // 
@@ -84,13 +94,12 @@
             this.cntxtMenuStretchMode.Text = "Stretch Mode";
             this.cntxtMenuStretchMode.Click += new System.EventHandler(this.cntxtMenuStretchMode_Click);
             // 
-            // cntxtMenuFullScreen
+            // cntxtMenuOptions
             // 
-            this.cntxtMenuFullScreen.CheckOnClick = true;
-            this.cntxtMenuFullScreen.Name = "cntxtMenuFullScreen";
-            this.cntxtMenuFullScreen.Size = new System.Drawing.Size(189, 22);
-            this.cntxtMenuFullScreen.Text = "Full Screen";
-            this.cntxtMenuFullScreen.Click += new System.EventHandler(this.cntxtMenuFullScreen_Click);
+            this.cntxtMenuOptions.Name = "cntxtMenuOptions";
+            this.cntxtMenuOptions.Size = new System.Drawing.Size(189, 22);
+            this.cntxtMenuOptions.Text = "Open &Options";
+            this.cntxtMenuOptions.Click += new System.EventHandler(this.cntxtMenuOptions_Click);
             // 
             // AgileForm
             // 
@@ -120,6 +129,7 @@
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuAspectCorrectionOff;
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuStretchMode;
         private System.Windows.Forms.ToolStripMenuItem cntxtMenuFullScreen;
+        private System.Windows.Forms.ToolStripMenuItem cntxtMenuOptions;
     }
 }
 
