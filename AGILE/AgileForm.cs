@@ -323,7 +323,8 @@ namespace AGILE
         /// <param name="e"></param>
         private void AgileForm_Resize(object sender, System.EventArgs e)
         {
-            AdjustGameScreen();
+            if (this.WindowState != FormWindowState.Minimized)
+                AdjustGameScreen();
         }
 
         #endregion Form Events
