@@ -29,6 +29,8 @@ namespace AGILE
         private Boolean fullScreen = false;
         private FormWindowState windowStateBeforeFullscreen;
 
+        private static bool nullXML = false;
+        
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
 
         /// <summary>
@@ -393,7 +395,7 @@ namespace AGILE
 
             cntxtMenuFullScreen.Checked = this.fullScreen;
         }
-        private static bool nullXML = false;
+        
         private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
             xmlEditor = Properties.Settings.Default.xmlEditor;
