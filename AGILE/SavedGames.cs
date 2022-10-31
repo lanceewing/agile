@@ -538,7 +538,7 @@ namespace AGILE
             savedGameData[aniObjsOffset + 0] = (byte)(aniObjectsLength & 0xFF);
             savedGameData[aniObjsOffset + 1] = (byte)((aniObjectsLength >> 8) & 0xFF);
             
-            for (int i=0; i < state.Objects.NumOfAnimatedObjects; i++)
+            for (int i=0; i < (state.Objects.NumOfAnimatedObjects + 1); i++)
             {
                 int aniObjOffset = aniObjsOffset + 2 + (i * 0x2B);
                 AnimatedObject aniObj = state.AnimatedObjects[i];
