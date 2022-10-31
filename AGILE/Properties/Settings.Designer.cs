@@ -61,6 +61,18 @@ namespace AGILE.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useSystemXMLDefault {
+            get {
+                return ((bool)(this["useSystemXMLDefault"]));
+            }
+            set {
+                this["useSystemXMLDefault"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string xmlEditor {
             get {
