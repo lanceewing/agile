@@ -393,7 +393,12 @@ namespace AGILE
 
             cntxtMenuFullScreen.Checked = this.fullScreen;
         }
-
+        
+        /// <summary>
+        /// Opens config file for debugging
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
             xmlEditor = Properties.Settings.Default.xmlEditor;
