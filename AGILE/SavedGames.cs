@@ -450,7 +450,6 @@ namespace AGILE
             savedGameData[338] = (byte)(state.BlockUpperLeftY & 0xFF);
             savedGameData[339] = (byte)((state.BlockUpperLeftY >> 8) & 0xFF);
             // [309] 340 - 341(2 bytes) Lower Right X position for active block.
-            state.BlockLowerRightX = (short)(savedGameData[340] + (savedGameData[341] << 8));
             savedGameData[340] = (byte)(state.BlockLowerRightX & 0xFF);
             savedGameData[341] = (byte)((state.BlockLowerRightX >> 8) & 0xFF);
             // [311] 342 - 343(2 bytes) Lower Right Y position for active block.
@@ -539,7 +538,7 @@ namespace AGILE
             savedGameData[aniObjsOffset + 0] = (byte)(aniObjectsLength & 0xFF);
             savedGameData[aniObjsOffset + 1] = (byte)((aniObjectsLength >> 8) & 0xFF);
             
-            for (int i=0; i < state.Objects.NumOfAnimatedObjects; i++)
+            for (int i=0; i < (state.Objects.NumOfAnimatedObjects + 1); i++)
             {
                 int aniObjOffset = aniObjsOffset + 2 + (i * 0x2B);
                 AnimatedObject aniObj = state.AnimatedObjects[i];
