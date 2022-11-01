@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AGILE
@@ -69,6 +71,31 @@ namespace AGILE
             // Clear the words matched from last time.
             state.RecognisedWords.Clear();
             this.RecognisedWordNumbers.Clear();
+
+            // LSL1 has word that contain spaces. e.g "al sent me". Let's check that first
+            // before tokenizing the string
+            // sanitize the string: lower case, trimm, remove excess white space between words
+            string sanitizedLine = String.Join(" ", inputLine.ToLower().Trim().Split(' ').Select(p => p.Trim()).Where(p => !string.IsNullOrWhiteSpace(p)));
+            if (state.Words.WordToNumber.ContainsKey(sanitizedLine))
+            {
+                // The word is recognised, so let's get the word number for it.
+                int matchedWordNum = state.Words.WordToNumber[sanitizedLine];
+
+                // If the word number is 0, it is ignored.
+                if (matchedWordNum > 0)
+                {
+                    // Otherwise store matched word details.
+                    state.RecognisedWords.Add(sanitizedLine);
+                    this.RecognisedWordNumbers.Add(matchedWordNum);
+
+                    state.Vars[Defines.UNKNOWN_WORD] = 0;
+                    state.Flags[Defines.INPUT] = true;
+
+                    // return from function. No need to tokenize input
+                    return;
+                }
+            }
+
 
             // Remove ignored characters, then split user entered line by separators, retaining any non-empty results.
             IEnumerable<string> inputWords = inputLine.ToLower().Replace(IGNORE_CHARS, "").Split(SEPARATORS).Where(s => s.Length > 0);
