@@ -10,6 +10,9 @@ AGILE is an almost complete implementation that has attempted to align as close 
 - IBM PCJR 4-channel sound, using SN76496 emulation.
 - Game detection of most known versions of Sierra's original PC AGI games, and most AGI fan games.
 - Command line parameter to integrate with WinAGI.
+- Full screen mode. Use <kbd>F11</kbd> or <kbd>Alt</kbd>+<kbd>Enter</kbd>.
+- Show Priority screen. Use <kbd>F12</kbd>.
+- Change display settings. Right-click on screen.
 
 ## Requirements
 
