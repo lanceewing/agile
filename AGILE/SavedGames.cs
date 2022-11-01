@@ -395,7 +395,7 @@ namespace AGILE
                 }
             }
 
-            // Recreate the raw byte data
+            // Dump of the in memory OBJECT file including updates made by get, put and drop commands
             MemoryStream memoryStream = new MemoryStream();
             memoryStream.WriteByte((byte)((uint)num & 0xFFu));
             memoryStream.WriteByte((byte)((uint)(num >> 8) & 0xFFu));
