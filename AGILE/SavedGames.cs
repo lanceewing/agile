@@ -392,7 +392,6 @@ namespace AGILE
                     itemList.Add(agiObject);
                     // 1 = NUL char
                     offset = offset + (agiObject.Name.Length + 1);
-
                 }
             }
 
