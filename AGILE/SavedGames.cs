@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static AGI.Resource;
 using static AGILE.ScriptBuffer;
 using static AGILE.TextGraphics;
 
@@ -369,6 +370,61 @@ namespace AGILE
             return Path.Combine(Vista.GetKnownFolderPath(Vista.SavedGames) ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), state.GameId);
         }
 
+        private byte[] EncodeObjects()
+        {
+            // Recreate the Item Entries
+            // key = object name
+            // value = offset
+            Dictionary<string, int> itemEntries = new Dictionary<string, int>();
+            // We need to preserve the order of the objects in the list
+            List<AGI.Resource.Object> itemList = new List<AGI.Resource.Object>();
+            Objects objects = state.Objects;
+            int count = objects.Count;
+            int num = count * 3;
+
+            int offset = num;
+            for (int i = 0; i < count; i++)
+            {
+                AGI.Resource.Object agiObject = objects[i];
+                if (!itemEntries.ContainsKey(agiObject.Name))
+                {
+                    itemEntries.Add(agiObject.Name, offset);
+                    itemList.Add(agiObject);
+                    // 1 = NUL char
+                    offset = offset + (agiObject.Name.Length + 1);
+
+                }
+            }
+
+            // Recreate the raw byte data
+            MemoryStream memoryStream = new MemoryStream();
+            memoryStream.WriteByte((byte)((uint)num & 0xFFu));
+            memoryStream.WriteByte((byte)((uint)(num >> 8) & 0xFFu));
+            memoryStream.WriteByte(state.Objects.NumOfAnimatedObjects);
+            for (int i = 0; i < count; i++)
+            {
+                AGI.Resource.Object agiObject = objects[i];
+                int itemOffset = itemEntries[agiObject.Name];
+                memoryStream.WriteByte((byte)((uint)itemOffset & 0xFFu));
+                memoryStream.WriteByte((byte)((uint)(itemOffset >> 8) & 0xFFu));
+                memoryStream.WriteByte(agiObject.Room);
+            }
+
+            foreach (AGI.Resource.Object item in itemList)
+            {
+                byte[] bytes = Encoding.ASCII.GetBytes(item.Name);
+                foreach (byte value in bytes)
+                {
+                    memoryStream.WriteByte(value);
+                }
+
+                memoryStream.WriteByte(0);
+            }
+
+            // No need to encrypt. Save game stores the OBJECT section unencrypted
+            return memoryStream.ToArray();
+        }
+
         /// <summary>
         /// Saves the GameState of the Interpreter to a saved game file.
         /// </summary>
@@ -634,7 +690,7 @@ namespace AGILE
             // THIRD PIECE: OBJECTS
             // Almost an exact copy of the OBJECT file, but with the 3 byte header removed, and room
             // numbers reflecting the current location of each object.
-            byte[] objectData = state.Objects.Encode();
+            byte[] objectData = EncodeObjects();
             int objectsOffset = aniObjsOffset + 2 + aniObjectsLength;
             int objectsLength = objectData.Length - 3;
             savedGameData[objectsOffset + 0] = (byte)(objectsLength & 0xFF);
