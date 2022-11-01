@@ -988,7 +988,9 @@ namespace AGILE
             // numbers reflecting the current location of each object.
             int objectsOffset = aniObjsOffset + 2 + aniObjectsLength;
             int objectsLength = (savedGameData[objectsOffset + 0] + (savedGameData[objectsOffset + 1] << 8));
-            state.Objects.NumOfAnimatedObjects = (byte)numOfAniObjs;
+            // The NumOfAnimatedObjects, as stored in OBJECT, should be 1 less than the number of animated object slots
+            // (due to add.to.pic slot), otherwise this number increments by 1 on every save followed by restore.
+            state.Objects.NumOfAnimatedObjects = (byte)(numOfAniObjs - 1);
             int numOfObjects = (savedGameData[objectsOffset + 2] + (savedGameData[objectsOffset + 3] << 8)) / 3;
             // Set the saved room number of each Object. 
             for (int objectNum = 0, roomPos = objectsOffset + 4; objectNum < numOfObjects; objectNum++, roomPos += 3)
