@@ -58,7 +58,15 @@ namespace AGILE
             this.cntxtMenuOpenUserConfig.Name = "cntxtMenuOpenUserConfig";
             this.cntxtMenuOpenUserConfig.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuOpenUserConfig.Text = "Open User.&config";
+            this.cntxtMenuOpenUserConfig.Visible = false;
             this.cntxtMenuOpenUserConfig.Click += new System.EventHandler(this.cntxtMenuOpenUserConfig_Click);
+            // 
+            // cntxtMenuOptions
+            // 
+            this.cntxtMenuOptions.Name = "cntxtMenuOptions";
+            this.cntxtMenuOptions.Size = new System.Drawing.Size(189, 22);
+            this.cntxtMenuOptions.Text = "Open &Options";
+            this.cntxtMenuOptions.Click += new System.EventHandler(this.cntxtMenuOptions_Click);
             // 
             // cntxtMenuFullScreen
             // 
@@ -93,13 +101,6 @@ namespace AGILE
             this.cntxtMenuStretchMode.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuStretchMode.Text = "Stretch Mode";
             this.cntxtMenuStretchMode.Click += new System.EventHandler(this.cntxtMenuStretchMode_Click);
-            // 
-            // cntxtMenuOptions
-            // 
-            this.cntxtMenuOptions.Name = "cntxtMenuOptions";
-            this.cntxtMenuOptions.Size = new System.Drawing.Size(189, 22);
-            this.cntxtMenuOptions.Text = "Open &Options";
-            this.cntxtMenuOptions.Click += new System.EventHandler(this.cntxtMenuOptions_Click);
             // 
             // AgileForm
             // 
