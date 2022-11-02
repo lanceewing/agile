@@ -58,6 +58,7 @@ namespace AGILE
             this.cntxtMenuOpenUserConfig.Name = "cntxtMenuOpenUserConfig";
             this.cntxtMenuOpenUserConfig.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuOpenUserConfig.Text = "Open User.&config";
+            this.cntxtMenuOpenUserConfig.Visible = false;
             this.cntxtMenuOpenUserConfig.Click += new System.EventHandler(this.cntxtMenuOpenUserConfig_Click);
             // 
             // cntxtMenuFullScreen
