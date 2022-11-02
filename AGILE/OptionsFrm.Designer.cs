@@ -33,20 +33,20 @@ namespace AGILE
             this.applyBtn = new System.Windows.Forms.Button();
             this.okBtn = new System.Windows.Forms.Button();
             this.cancelBtn = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.xmlGrpBox = new System.Windows.Forms.GroupBox();
+            this.systemXMLDefaultChkBox = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.browseXMLEditorBtn = new System.Windows.Forms.Button();
             this.xmlEditorTxtBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.runInAgileChkBox = new System.Windows.Forms.CheckBox();
-            this.systemXMLDefaultChkBox = new System.Windows.Forms.CheckBox();
-            this.groupBox1.SuspendLayout();
+            this.xmlGrpBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // applyBtn
             // 
             this.applyBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.applyBtn.Location = new System.Drawing.Point(297, 169);
+            this.applyBtn.Location = new System.Drawing.Point(297, 141);
             this.applyBtn.Name = "applyBtn";
             this.applyBtn.Size = new System.Drawing.Size(75, 23);
             this.applyBtn.TabIndex = 1038;
@@ -58,7 +58,7 @@ namespace AGILE
             // okBtn
             // 
             this.okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okBtn.Location = new System.Drawing.Point(135, 169);
+            this.okBtn.Location = new System.Drawing.Point(135, 141);
             this.okBtn.Name = "okBtn";
             this.okBtn.Size = new System.Drawing.Size(75, 23);
             this.okBtn.TabIndex = 1036;
@@ -71,7 +71,7 @@ namespace AGILE
             // 
             this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(216, 169);
+            this.cancelBtn.Location = new System.Drawing.Point(216, 141);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(75, 23);
             this.cancelBtn.TabIndex = 1037;
@@ -80,26 +80,38 @@ namespace AGILE
             this.cancelBtn.UseVisualStyleBackColor = true;
             this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
             // 
-            // groupBox1
+            // xmlGrpBox
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.xmlGrpBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.systemXMLDefaultChkBox);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Controls.Add(this.browseXMLEditorBtn);
-            this.groupBox1.Controls.Add(this.xmlEditorTxtBox);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(360, 101);
-            this.groupBox1.TabIndex = 1032;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "External XML Editor";
+            this.xmlGrpBox.Controls.Add(this.systemXMLDefaultChkBox);
+            this.xmlGrpBox.Controls.Add(this.textBox1);
+            this.xmlGrpBox.Controls.Add(this.browseXMLEditorBtn);
+            this.xmlGrpBox.Controls.Add(this.xmlEditorTxtBox);
+            this.xmlGrpBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xmlGrpBox.Location = new System.Drawing.Point(12, 12);
+            this.xmlGrpBox.Name = "xmlGrpBox";
+            this.xmlGrpBox.Size = new System.Drawing.Size(360, 101);
+            this.xmlGrpBox.TabIndex = 1032;
+            this.xmlGrpBox.TabStop = false;
+            this.xmlGrpBox.Text = "External XML Editor";
+            // 
+            // systemXMLDefaultChkBox
+            // 
+            this.systemXMLDefaultChkBox.AutoSize = true;
+            this.systemXMLDefaultChkBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.systemXMLDefaultChkBox.Location = new System.Drawing.Point(6, 50);
+            this.systemXMLDefaultChkBox.Name = "systemXMLDefaultChkBox";
+            this.systemXMLDefaultChkBox.Size = new System.Drawing.Size(115, 17);
+            this.systemXMLDefaultChkBox.TabIndex = 1040;
+            this.systemXMLDefaultChkBox.Text = "Use system default";
+            this.systemXMLDefaultChkBox.UseVisualStyleBackColor = true;
+            this.systemXMLDefaultChkBox.CheckedChanged += new System.EventHandler(this.systemXMLDefaultChkBox_CheckedChanged);
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.BackColor = System.Drawing.SystemColors.Control;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -130,7 +142,7 @@ namespace AGILE
             // 
             // xmlEditorTxtBox
             // 
-            this.xmlEditorTxtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.xmlEditorTxtBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.xmlEditorTxtBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xmlEditorTxtBox.Location = new System.Drawing.Point(6, 73);
@@ -149,40 +161,29 @@ namespace AGILE
             this.runInAgileChkBox.TabIndex = 1039;
             this.runInAgileChkBox.Text = "Add \"Run in Agile\" folder context menu item";
             this.runInAgileChkBox.UseVisualStyleBackColor = true;
-            this.runInAgileChkBox.CheckedChanged += new System.EventHandler(this.runInAgileChkBox_CheckedChanged);
-            // 
-            // systemXMLDefaultChkBox
-            // 
-            this.systemXMLDefaultChkBox.AutoSize = true;
-            this.systemXMLDefaultChkBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.systemXMLDefaultChkBox.Location = new System.Drawing.Point(6, 50);
-            this.systemXMLDefaultChkBox.Name = "systemXMLDefaultChkBox";
-            this.systemXMLDefaultChkBox.Size = new System.Drawing.Size(115, 17);
-            this.systemXMLDefaultChkBox.TabIndex = 1040;
-            this.systemXMLDefaultChkBox.Text = "Use system default";
-            this.systemXMLDefaultChkBox.UseVisualStyleBackColor = true;
-            this.systemXMLDefaultChkBox.CheckedChanged += new System.EventHandler(this.systemXMLDefaultChkBox_CheckedChanged);
             // 
             // OptionsFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelBtn;
-            this.ClientSize = new System.Drawing.Size(384, 204);
+            this.ClientSize = new System.Drawing.Size(384, 176);
             this.Controls.Add(this.runInAgileChkBox);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.xmlGrpBox);
             this.Controls.Add(this.applyBtn);
             this.Controls.Add(this.okBtn);
             this.Controls.Add(this.cancelBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(400, 195);
+            this.MaximumSize = new System.Drawing.Size(400, 215);
+            this.MinimumSize = new System.Drawing.Size(400, 215);
             this.Name = "OptionsFrm";
-            this.Text = "Wiki Page Generator Options";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "AGILE Options";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsFrm_FormClosing);
             this.Load += new System.EventHandler(this.Form_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.xmlGrpBox.ResumeLayout(false);
+            this.xmlGrpBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -193,7 +194,7 @@ namespace AGILE
         private System.Windows.Forms.Button applyBtn;
         private System.Windows.Forms.Button okBtn;
         private System.Windows.Forms.Button cancelBtn;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox xmlGrpBox;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button browseXMLEditorBtn;
         private System.Windows.Forms.TextBox xmlEditorTxtBox;
