@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AGILE
 {
@@ -18,12 +18,12 @@ namespace AGILE
         /// These are the characters that separate words in the user input string (although
         /// usually it would be space).
         /// </summary>
-        private char[] SEPARATORS = " ,.?!();:[]{}".ToCharArray();
+        private string SEPARATORS = "[ ,.?!();:\\[\\]{}]+";
 
         /// <summary>
         /// A regex matching the characters to be deleted from the user input string.
         /// </summary>
-        private string IGNORE_CHARS = "['`-\"]";
+        private string IGNORE_CHARS = "['`\\-\"]";
 
         /// <summary>
         /// Special word number that matches any word.
@@ -64,62 +64,62 @@ namespace AGILE
         /// <param name="inputLine"></param>
         public void Parse(string inputLine)
         {
-            bool lastWordIgnored = false;
-
             // Clear the words matched from last time.
             state.RecognisedWords.Clear();
             this.RecognisedWordNumbers.Clear();
 
-            // Remove ignored characters, then split user entered line by separators, retaining any non-empty results.
-            IEnumerable<string> inputWords = inputLine.ToLower().Replace(IGNORE_CHARS, "").Split(SEPARATORS).Where(s => s.Length > 0);
+            // Remove ignored characters and collapse separators into a single space char.
+            string sanitisedInputLine = Regex.Replace(Regex.Replace(inputLine.ToLower(), IGNORE_CHARS, ""), SEPARATORS, " ").Trim();
 
-            // Iterate through the user entered words attempting to match them to the known words.
-            foreach (string inputWord in inputWords)
+            if (sanitisedInputLine.Length > 0)
             {
-                string wordToMatch = inputWord;
+                int inputLineStartPos = 0;
 
-                // Start by checking if there is a match for the combination of the previous word
-                // and this word joined together (e.g. "look inside"). Sometimes AGI defines such words.
-                // But we only do this if there wasn't an ignored word in between.
-                if ((state.RecognisedWords.Count > 0) && !lastWordIgnored) {
-                    string joinedWord = state.RecognisedWords.Last() + " " + inputWord;
-                    if (state.Words.WordToNumber.ContainsKey(joinedWord))
-                    {
-                        // The joined word is recognised, so we'll use that as the input word.
-                        wordToMatch = joinedWord;
-
-                        // And we'll also remove the previous match (since we now have a longer match).
-                        state.RecognisedWords.RemoveAt(state.RecognisedWords.Count - 1);
-                        this.RecognisedWordNumbers.RemoveAt(this.RecognisedWordNumbers.Count - 1);
-                    }
-                }
-
-                lastWordIgnored = false;
-
-                if (state.Words.WordToNumber.ContainsKey(wordToMatch))
+                while (inputLineStartPos < sanitisedInputLine.Length)
                 {
-                    // The word is recognised, so let's get the word number for it.
-                    int matchedWordNum = state.Words.WordToNumber[wordToMatch];
+                    // Scan backwards from the end of the input line, to the current input line start pos, to find the longest word match.
+                    for (int inputLineEndPos = sanitisedInputLine.Length; inputLineEndPos >= inputLineStartPos; inputLineEndPos--)
+                    {
+                        if ((inputLineEndPos == sanitisedInputLine.Length) || (sanitisedInputLine[inputLineEndPos] == ' '))
+                        {
+                            // This is the end of a word in the input line. Check if we have a match.
+                            string wordToMatch = sanitisedInputLine.Substring(inputLineStartPos, inputLineEndPos - inputLineStartPos);
 
-                    // If the word number is 0, it is ignored.
-                    if (matchedWordNum > 0)
-                    {
-                        // Otherwise store matched word details.
-                        state.RecognisedWords.Add(wordToMatch);
-                        this.RecognisedWordNumbers.Add(matchedWordNum);
+                            if (state.Words.WordToNumber.ContainsKey(wordToMatch))
+                            {
+                                // The word is recognised. This is the longest match possible, so let's get the word number for it.
+                                int matchedWordNum = state.Words.WordToNumber[wordToMatch];
+
+                                // If the word number is 0, it is ignored.
+                                if (matchedWordNum > 0)
+                                {
+                                    // Otherwise store matched word details.
+                                    state.RecognisedWords.Add(wordToMatch);
+                                    this.RecognisedWordNumbers.Add(matchedWordNum);
+                                }
+
+                                // Set the next start position to character after the separator that ended the matched word
+                                // so that we can continue scanning the rest of the input line for more words.
+                                inputLineStartPos = inputLineEndPos + 1;
+                                break;
+                            }
+                            else if (wordToMatch.Equals("a") || wordToMatch.Equals("i"))
+                            {
+                                // Skip "a" and "i". Move input line start position beyond it.
+                                inputLineStartPos = inputLineEndPos + 1;
+                                break;
+                            }
+                            else if (!wordToMatch.Contains(" "))
+                            {
+                                // Unrecognised single word. Stores the word, use ANYWORD (word number 1, place holder for any word)
+                                state.RecognisedWords.Add(wordToMatch);
+                                this.RecognisedWordNumbers.Add(ANYWORD);
+                                state.Vars[Defines.UNKNOWN_WORD] = (byte)(state.RecognisedWords.Count);
+                                inputLineStartPos = sanitisedInputLine.Length;
+                                break;
+                            }
+                        }
                     }
-                    else
-                    {
-                        lastWordIgnored = true;
-                    }
-                }
-                else if (!wordToMatch.Equals("a") && !wordToMatch.Equals("i"))
-                {
-                    // Unrecognised word. Stores the word, use ANYWORD (word number 1, place holder for any word)
-                    state.RecognisedWords.Add(wordToMatch);
-                    this.RecognisedWordNumbers.Add(ANYWORD);
-                    state.Vars[Defines.UNKNOWN_WORD] = (byte)(state.RecognisedWords.Count);
-                    break;
                 }
             }
 
