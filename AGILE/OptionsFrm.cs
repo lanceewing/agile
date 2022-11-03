@@ -89,7 +89,7 @@ namespace AGILE
 
         #endregion Form Events
 
-        #region paths
+        #region Paths
 
         /// <summary>
         /// Sets/displays if Agile is to use the system default XML editor or user specified
@@ -155,17 +155,7 @@ namespace AGILE
             }
         }
 
-        #endregion paths
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void runInAgileChkBox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
+        #endregion Paths
 
         #region Button Events
 
@@ -240,7 +230,7 @@ namespace AGILE
 
             #endregion Paths
 
-            #region Set directory contextmenu
+            #region Set directory context menu
 
             string appEXE = Assembly.GetEntryAssembly().Location;
 
@@ -265,10 +255,11 @@ namespace AGILE
                 catch { }
             }
 
-            #endregion Set directory contextmenu
+            #endregion Set directory context menu
 
             Properties.Settings.Default.Save();
 
+            // Open user config if options was called from trying to open config without XML editor being specified
             if (currentXMLEditor != xmlEditorTxtBox.Text)
                 AgileForm.OpenConfig();
         }
