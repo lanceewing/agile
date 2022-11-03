@@ -174,5 +174,20 @@ namespace AGILE
             // unused part as well.
             return stream.GetBuffer();
         }
+
+        /// <summary>
+        /// Add an event to the script buffer without checking NO_SCRIPT flag. Used primarily by restore save game function.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="who"></param>
+        public void RestoreScript(ScriptBufferEventType action, int who, byte[] data = null)
+        {
+            Events.Add(new ScriptBufferEvent(action, who, data));
+
+            if (Events.Count > MaxScript)
+            {
+                MaxScript = Events.Count;
+            }
+        }
     }
 }

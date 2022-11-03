@@ -1057,7 +1057,7 @@ namespace AGILE
                     // Increase i to account for the fact that we've processed an additional 3 slots.
                     i += 3;
                 }
-                state.ScriptBuffer.AddScript((ScriptBuffer.ScriptBufferEventType)action, resourceNum, data);
+                state.ScriptBuffer.RestoreScript((ScriptBuffer.ScriptBufferEventType)action, resourceNum, data);
             }
 
             // FIFTH PIECE: SCAN OFFSETS
