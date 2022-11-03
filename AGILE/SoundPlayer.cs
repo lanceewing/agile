@@ -158,11 +158,8 @@ namespace AGILE
                 sampleStream.WriteByte((byte)((sample >> 8) & 0xFF));
             }
 
-            // Use the samples to create a Wave file. These can be several MB in size (e.g. 5MB, 8MB, 10MB)
-            byte[] waveData = CreateWave(sampleStream.ToArray());
-
             // Cache for use when the sound is played. This reduces overhead of generating WAV on every play.
-            this.SoundCache.Add(sound.Index, waveData);
+            this.SoundCache.Add(sound.Index, sampleStream.ToArray());
         }
 
         /// <summary>
@@ -238,44 +235,6 @@ namespace AGILE
             // The above call blocks until the sound has finished playing. If sound is not on, then it happens immediately.
             soundNumPlaying = -1;
             state.Flags[endFlag] = true;
-        }
-
-        /// <summary>
-        /// Creates a WAVE file from the given sample data.
-        /// </summary>
-        /// <param name="sampleData">The sample data to create the WAVE file from.</param>
-        private byte[] CreateWave(byte[] sampleData)
-        {
-            // Create WAVE header
-            int headerLen = 44;
-            int l1 = (sampleData.Length + headerLen) - 8;   // Total size of file minus 8.
-            int l2 = sampleData.Length;
-            byte[] wave = new byte[headerLen + sampleData.Length];
-            byte[] header = new byte[] {
-                82, 73, 70, 70,   // RIFF
-                (byte)(l1 & 255), (byte)((l1 >> 8) & 255), (byte)((l1 >> 16) & 255), (byte)((l1 >> 24) & 255),
-                87, 65, 86, 69,   // WAVE
-                102, 109, 116, 32,// fmt  (chunk ID)
-                16, 0, 0, 0,      // size (chunk size)
-                1, 0,             // audio format (PCM = 1, i.e. Linear quantization)
-                2, 0,             // number of channels
-                68, 172, 0, 0,    // sample rate (samples per second), i.e. 44100
-                16, 177, 2, 0,    // byte rate (average bytes per second, == SampleRate * NumChannels * BitsPerSample/8)
-                4, 0,             // block align (== NumChannels * BitsPerSample/8)
-                16, 0,            // bits per sample (i.e 16 bits per sample)
-                100, 97, 116, 97, // data (chunk ID)
-                (byte)(l2 & 255), (byte)((l2 >> 8) & 255), (byte)((l2 >> 16) & 255), (byte)((l2 >> 24) & 255)
-            };
-            header.CopyTo(wave, 0);
-
-            // Append sample data
-            for (int i = 0, idx = headerLen; i < sampleData.Length; ++i)
-            {
-                wave[idx++] = sampleData[i];
-            }
-
-            // Return the WAVE formatted typed array
-            return wave;
         }
 
         /// <summary>
