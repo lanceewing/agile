@@ -361,7 +361,14 @@ namespace AGILE
         /// </summary>
         private void RestoreMenuLine()
         {
-            textGraphics.UpdateStatusLine();
+            if (state.ShowStatusLine)
+            {
+                textGraphics.UpdateStatusLine();
+            }
+            else
+            {
+                textGraphics.ClearLines(0, 0, 0);
+            }
         }
 
         /// <summary>
