@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AGILE
 {
@@ -54,7 +50,28 @@ namespace AGILE
 
         public int MaxScript;
         public int ScriptSize;
-        public int ScriptEntries { get { return Events.Count; } }
+        public int ScriptEntries
+        {
+            get
+            {
+                int count = 0;
+                foreach (ScriptBufferEvent e in Events)
+                {
+                    // in AGI, the add.to.pic script event consist of 4 entries
+                    // (who, action, loop #, view #, X, Y, cel #, priority)
+                    // the rest of the events are just 1 entry (who, action)
+                    if (e.type == ScriptBufferEventType.AddToPic)
+                    {
+                        count += 4;
+                    }
+                    else
+                    {
+                        count += 1;
+                    }
+                }
+                return count;
+            }
+        }
         public int SavedScript;
 
         /// <summary>
@@ -101,11 +118,11 @@ namespace AGILE
         /// <param name="who"></param>
         public void AddScript(ScriptBufferEventType action, int who, byte[] data = null)
         {
-	        if (state.Flags[Defines.NO_SCRIPT]) return;
+            if (state.Flags[Defines.NO_SCRIPT]) return;
 
-	        if (doScript)
+            if (doScript)
             {
-		        if (Events.Count >= this.ScriptSize)
+                if (Events.Count >= this.ScriptSize)
                 {
                     // TODO: Error. Error(11, maxScript);
                     return;
@@ -114,7 +131,7 @@ namespace AGILE
                 {
                     Events.Add(new ScriptBufferEvent(action, who, data));
                 }
-		    }
+            }
 
             if (Events.Count > MaxScript)
             {
