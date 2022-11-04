@@ -192,10 +192,9 @@ namespace AGILE
                     int index = (y << 7) + (y << 5) + x;
                     byte data = priorityPixels[index];
 
-                    // TODO: This is a hack for KQ1 that I've inherited from the original MEKA. Need to check why it is needed.
                     if (data == 3)
                     {
-                        state.PriorityPixels[index] = 4;
+                        state.PriorityPixels[index] = 3;
                         state.ControlPixels[index] = data;
                     }
                     else if (data < 3)
@@ -209,13 +208,7 @@ namespace AGILE
                         {
                             data = priorityPixels[(dy << 7) + (dy << 5) + x];
 
-                            // TODO: The following if statement is a hack to fix a problem in KQ1 room 1.
-                            if (data == 3)
-                            {
-                                priFound = true;
-                                state.PriorityPixels[index] = 4;
-                            }
-                            else if (data > 3)
+                            if (data > 2)
                             {
                                 priFound = true;
                                 state.PriorityPixels[index] = data;
