@@ -32,11 +32,11 @@ namespace AGILE
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AgileForm));
             this.cntxtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cntxtMenuOpenUserConfig = new System.Windows.Forms.ToolStripMenuItem();
+            this.cntxtMenuOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuFullScreen = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuAspectCorrectionOn = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuAspectCorrectionOff = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenuStretchMode = new System.Windows.Forms.ToolStripMenuItem();
-            this.cntxtMenuOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.cntxtMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +50,7 @@ namespace AGILE
             this.cntxtMenuAspectCorrectionOff,
             this.cntxtMenuStretchMode});
             this.cntxtMenu.Name = "cntxtMenu";
-            this.cntxtMenu.Size = new System.Drawing.Size(190, 158);
+            this.cntxtMenu.Size = new System.Drawing.Size(190, 136);
             this.cntxtMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cntxtMenu_Opening);
             // 
             // cntxtMenuOpenUserConfig

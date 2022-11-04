@@ -99,6 +99,8 @@ namespace AGILE
             // systemXMLDefaultChkBox
             // 
             this.systemXMLDefaultChkBox.AutoSize = true;
+            this.systemXMLDefaultChkBox.Checked = true;
+            this.systemXMLDefaultChkBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.systemXMLDefaultChkBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.systemXMLDefaultChkBox.Location = new System.Drawing.Point(6, 50);
             this.systemXMLDefaultChkBox.Name = "systemXMLDefaultChkBox";
@@ -125,7 +127,7 @@ namespace AGILE
             this.textBox1.Size = new System.Drawing.Size(348, 48);
             this.textBox1.TabIndex = 1000;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "Select external XML editor for manually editing save files.";
+            this.textBox1.Text = "Select external XML editor for viewing your user config file.";
             // 
             // browseXMLEditorBtn
             // 
