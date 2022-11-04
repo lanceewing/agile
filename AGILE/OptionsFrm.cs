@@ -239,7 +239,7 @@ namespace AGILE
             {
                 try
                 {
-                    Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE", "", "Run in AGILE");
+                    Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE", "", "Run with AGILE");
                     Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE", "Icon", Assembly.GetEntryAssembly().Location);
 
                     Registry.SetValue(@"HKEY_CLASSES_ROOT\Directory\shell\AGILE\command", "", @"""" + appEXE + @"""" + @" ""--working-dir"" ""%1""");
