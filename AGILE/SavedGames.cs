@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -370,6 +371,36 @@ namespace AGILE
         }
 
         /// <summary>
+        /// Returns the length of the save variables part of a saved game.
+        /// </summary>
+        /// <param name="version">The AGI interpreter version string.</param>
+        /// <returns>The length of the save variables part of a saved game</returns>
+        private int GetSaveVariablesLength(String version)
+        {
+            switch (version)
+            {
+                case "2.089":
+                case "2.272":
+                case "2.277":
+                    return 0x03DB;
+
+                case "2.411":
+                case "2.425":
+                case "2.426":
+                case "2.435":
+                case "2.439":
+                case "2.440":
+                    return 0x05DF;
+
+                // TODO: Need to add V3 games, once lengths are determined.
+
+                // Default covers all the 2.9XX versions.
+                default:
+                    return 0x05E1;
+            }
+        }
+
+        /// <summary>
         /// Saves the GameState of the Interpreter to a saved game file.
         /// </summary>
         public void SaveGameState()
@@ -404,8 +435,12 @@ namespace AGILE
             foreach (byte b in Encoding.ASCII.GetBytes(savedGame.Description)) savedGameData[pos++] = b;
 
             // FIRST PIECE: SAVE VARIABLES
-            // [0] 31 - 32(2 bytes) Length of save variables piece. Length depends on AGI interpreter version. We use 0xE1 0x05
-            int saveVarsLength = 0x05E1;
+            // [0] 31 - 32(2 bytes) Length of save variables piece. Length depends on AGI interpreter version.
+            // 0x05E1 is the length for 2.9XX AGI interpreter versions.
+            // 0x05DF is the length for 2.4XX AGI interpreter versions.
+            // 0x03DB is the length for 2.272 and 2.089 AGI interpreter versions.
+            // TODO: V3 saved games not yet covered.
+            int saveVarsLength = GetSaveVariablesLength(state.Version);
             int aniObjsOffset = 33 + saveVarsLength;
             savedGameData[31] = (byte)(saveVarsLength & 0xFF);
             savedGameData[32] = (byte)((saveVarsLength >> 8) & 0xFF);
@@ -529,7 +564,11 @@ namespace AGILE
 
             // [1505] 1536(2 bytes) Stores a pushed position within the script event list
             // Note: Depends on interpreter version. 2.4xx and below didn't have push.script/pop.script, so they didn't have this saved game field.
-            savedGameData[1536] = (byte)(state.ScriptBuffer.SavedScript);
+            if (aniObjsOffset > 1536)
+            {
+                // The spec is 2 bytes, but as with the fields above, there shouldn't be more than 255.
+                savedGameData[1536] = (byte)(state.ScriptBuffer.SavedScript);
+            }
 
             // SECOND PIECE: ANIMATED OBJECT STATE
             // 1538 - 1539(2 bytes) Length of piece
