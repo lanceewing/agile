@@ -1582,10 +1582,14 @@ namespace AGILE
 
                         // Get the priority colour index for this position from the priority screen.
                         int priorityIndex = state.PriorityPixels[priorityPos];
+                        // Get the control pixel for this position from the control pixel array.
+                        int controlPixel = state.ControlPixels[priorityPos];
 
                         // If this AnimatedObject's priority is greater or equal to the priority screen value
                         // for this pixel's position, then we'll draw it.
-                        if (this.Priority >= priorityIndex)
+                        //
+                        // If the AnimatedObject's priority is 3 and the Control Pixel in screen is also 3, let's render the pixel
+                        if (this.Priority >= priorityIndex || (this.Priority == Defines.WATER && controlPixel == Defines.WATER))
                         {
                             // Get the colour index from the Cell bitmap pixels.
                             int colourIndex = cellPixels[cellPos];

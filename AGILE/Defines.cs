@@ -179,5 +179,14 @@ namespace AGILE
 
         public const int HORIZON = 36;
 
+        /* ------------------------ Priority Bands ------------------------ */
+
+        public const int UNCONDITIONAL_LINE = 0;
+
+        public const int CONDITIONAL_LINE = 1;
+
+        public const int ALARML_LINE = 2;
+
+        public const int WATER = 3;
     }
 }
