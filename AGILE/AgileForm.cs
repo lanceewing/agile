@@ -534,7 +534,7 @@ namespace AGILE
                     }
                 }
             }
-            catch { }// (Exception ex) {}
+            catch { }
         }
 
         /// <summary>
