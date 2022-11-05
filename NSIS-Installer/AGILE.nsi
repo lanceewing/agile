@@ -18,7 +18,7 @@
 !define SHORT_NAME "AGILE" ; Common abbreviated app name
 !define DOS_NAME "AGILE" ; Name to Conform to 8.3 Naming Convention
 !define RESOURCEPATH "..\AGILE\bin\Debug" ; Path to folder for resource files
-
+""
 ; Add uninstaller info
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\AGILE.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -41,12 +41,12 @@ SetCompressor /solid lzma
 
 ; Pages -------------------------------------------------------
 ; Welcome page
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${RESOURCEPATH}\${DOS_NAME}.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${DOS_NAME}.bmp"
 !define MUI_WELCOMEPAGE_TITLE_3LINES!insertmacro MUI_PAGE_WELCOME
 
 ; License page
 !define MUI_LICENSEPAGE_BGCOLOR /gray
-!insertmacro MUI_PAGE_LICENSE "${RESOURCEPATH}\GPL.TXT" ; "${ReadmeFile}"
+!insertmacro MUI_PAGE_LICENSE "GPL.TXT" ; "${ReadmeFile}"
 
 ; Options page
 !define MUI_PAGE_CUSTOMFUNCTION_PRE OptionsPre
@@ -95,7 +95,7 @@ var ICONS_GROUP
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "${PRODUCT_NAME} installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "${PRODUCT_PUBLISHER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "${PUBLISHER_ACRONYM} is a trademark of ${PRODUCT_PUBLISHER}"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© ${PRODUCT_PUBLISHER}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Â© ${PRODUCT_PUBLISHER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "AGILE installer."
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.0.0"
 ;--------------------------------------------------------------
@@ -123,8 +123,8 @@ Section "${PRODUCT_NAME}" SEC01 ;MainSection
   SetOutPath "$INSTDIR"
   
   ; Add Resource Files ----------------------------------------
-  File "${RESOURCEPATH}\GPL.TXT"
-  File "${RESOURCEPATH}\README.TXT"
+  File "GPL.TXT"
+  File "README.TXT"
   
   ; Copy Game Files -------------------------------------------
   SetOutPath "$INSTDIR"
