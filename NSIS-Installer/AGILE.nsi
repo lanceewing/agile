@@ -9,7 +9,7 @@
 ; Defines -----------------------------------------------------
 ; Names
 !define PRODUCT_NAME "AGILE" ; Installer Name
-!define PRODUCT_VERSION "1.1.25" ; Script version of installer
+!define PRODUCT_VERSION "1.0.0" ; Script version of installer
 !define PRODUCT_PUBLISHER "The Sierra Help Pages" ; Installer Publisher
 !define PRODUCT_DEVELOPER "Lance Ewing" ;Installer Developer
 !define PUBLISHER_ACRONYM "SHP" ; Installer Publisher
