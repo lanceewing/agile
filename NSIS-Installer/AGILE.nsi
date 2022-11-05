@@ -1,8 +1,8 @@
 ; Generic NSIS Installer Script
 ; Template by Andrew Branscom (Collector)
 ; Script by Andrew Branscom
-; Set "!define RESOURCE_NAME" to your own path (can be the app's build folder)
-; Add GPL.TXT and "README.md" renamed to "README.TXT" to files resource path ( ${RESOURCE_NAME} )
+; Set "!define RESOURCEPATH" to your own path (can be the app's build folder)
+; Add GPL.TXT and "README.md" renamed to "README.TXT" to files resource path ( ${RESOURCEPATH} )
 
 ; Header ------------------------------------------------------
 
@@ -17,7 +17,7 @@
 !define PRODUCT_FILE_NAME "AGILE" ; PRODUCT_NAME without Illegal File Name Characters
 !define SHORT_NAME "AGILE" ; Common abbreviated app name
 !define DOS_NAME "AGILE" ; Name to Conform to 8.3 Naming Convention
-!define RESOURCE_NAME "" ; Path to folder for resource files
+!define RESOURCEPATH "..\AGILE\bin\Debug" ; Path to folder for resource files
 
 ; Add uninstaller info
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\AGILE.exe"
@@ -41,12 +41,12 @@ SetCompressor /solid lzma
 
 ; Pages -------------------------------------------------------
 ; Welcome page
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${RESOURCE_PATH}\${DOS_NAME}.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${RESOURCEPATH}\${DOS_NAME}.bmp"
 !define MUI_WELCOMEPAGE_TITLE_3LINES!insertmacro MUI_PAGE_WELCOME
 
 ; License page
 !define MUI_LICENSEPAGE_BGCOLOR /gray
-!insertmacro MUI_PAGE_LICENSE "${RESOURCE_PATH}\GPL.TXT" ; "${ReadmeFile}"
+!insertmacro MUI_PAGE_LICENSE "${RESOURCEPATH}\GPL.TXT" ; "${ReadmeFile}"
 
 ; Options page
 !define MUI_PAGE_CUSTOMFUNCTION_PRE OptionsPre
@@ -95,13 +95,13 @@ var ICONS_GROUP
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "${PRODUCT_NAME} installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "${PRODUCT_PUBLISHER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "${PUBLISHER_ACRONYM} is a trademark of ${PRODUCT_PUBLISHER}"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© ${PRODUCT_PUBLISHER}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Â© ${PRODUCT_PUBLISHER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "AGILE installer."
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.0.0"
 ;--------------------------------------------------------------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "${BASE_PATH}\${DOS_NAME}Setup.exe"
+OutFile "${RESOURCEPATH}\${DOS_NAME}Setup.exe"
 InstallDir "$PROGRAMFILES\${PRODUCT_FILE_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_RegKey}" ""
 ShowInstDetails show
@@ -123,20 +123,20 @@ Section "${PRODUCT_NAME}" SEC01 ;MainSection
   SetOutPath "$INSTDIR"
   
   ; Add Resource Files ----------------------------------------
-  File "${RESOURCE_PATH}\GPL.TXT"
-  File "${RESOURCE_PATH}\README.TXT"
+  File "${RESOURCEPATH}\GPL.TXT"
+  File "${RESOURCEPATH}\README.TXT"
   
   ; Copy Game Files -------------------------------------------
   SetOutPath "$INSTDIR"
-  File "${RESOURCE_PATH}\AGILibrary.dll"
-  File "${RESOURCE_PATH}\NAudio.Asio.dll"
-  File "${RESOURCE_PATH}\NAudio.Core.dll"
-  File "${RESOURCE_PATH}\NAudio.dll"
-  File "${RESOURCE_PATH}\NAudio.Midi.dll"
-  File "${RESOURCE_PATH}\NAudio.Wasapi.dll"
-  File "${RESOURCE_PATH}\NAudio.WinForms.dll"
-  File "${RESOURCE_PATH}\NAudio.WinMM.dll"
-  File "${RESOURCE_PATH}\AGILE.exe"
+  File "${RESOURCEPATH}\AGILibrary.dll"
+  File "${RESOURCEPATH}\NAudio.Asio.dll"
+  File "${RESOURCEPATH}\NAudio.Core.dll"
+  File "${RESOURCEPATH}\NAudio.dll"
+  File "${RESOURCEPATH}\NAudio.Midi.dll"
+  File "${RESOURCEPATH}\NAudio.Wasapi.dll"
+  File "${RESOURCEPATH}\NAudio.WinForms.dll"
+  File "${RESOURCEPATH}\NAudio.WinMM.dll"
+  File "${RESOURCEPATH}\AGILE.exe"
   
   ; Add Folder ShellEx
   ${If} $AddShellEx == "1"
@@ -151,7 +151,6 @@ Section "${PRODUCT_NAME}" SEC01 ;MainSection
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   SetOutPath "$INSTDIR"
-    MessageBox MB_OK `$AddShortcut`
   
   ${If} $AddShortcut == "1"
     CreateShortCut "$DESKTOP\${PRODUCT_FILE_NAME}.lnk" "$INSTDIR\AGILE.exe" "" "" "" "" "" "Run ${PRODUCT_NAME}"
