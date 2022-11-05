@@ -392,11 +392,57 @@ namespace AGILE
                 case "2.440":
                     return 0x05DF;
 
-                // TODO: Need to add V3 games, once lengths are determined.
+                case "3.002.102":
+                case "3.002.107":
+                    // TODO: Not yet sure what the additional 3 bytes are used for.
+                    return 0x05E4;
 
-                // Default covers all the 2.9XX versions.
+                case "3.002.149":
+                    // This difference between 3.002.107 and 3.002.149 is that the latter has only 12 strings (12x40=480=0x1E0)
+                    return 0x0404;
+
+                // Default covers all the 2.9XX versions, 3.002.086 and 3.002.098.
                 default:
                     return 0x05E1;
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of strings for the given AGI version.
+        /// </summary>
+        /// <param name="version">The AGI version to return the number of strings for.</param>
+        /// <returns>The number of strings for the given AGI version.</returns>
+        private int GetNumberOfStrings(String version)
+        {
+            switch (version)
+            {
+                case "2.089":
+                case "2.272":
+                case "2.277":
+                case "3.002.149":
+                    return 12;
+                // Most versions have 24 strings, as defined in the Defines constant.
+                default:
+                    return Defines.NUMSTRINGS;
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of controllers for the given AGI version.
+        /// </summary>
+        /// <param name="version">The AGI version to return the number of controllers for.</param>
+        /// <returns>The number of controllers for the given AGI version.</returns>
+        private int GetNumberOfControllers(String version)
+        {
+            switch (version)
+            {
+                case "2.089":
+                case "2.272":
+                case "2.277":
+                    return 40;
+                // Most versions have a max of 50 controllers, as defined in the Defines constant.
+                default:
+                    return Defines.NUMCONTROL;
             }
         }
 
@@ -436,10 +482,6 @@ namespace AGILE
 
             // FIRST PIECE: SAVE VARIABLES
             // [0] 31 - 32(2 bytes) Length of save variables piece. Length depends on AGI interpreter version.
-            // 0x05E1 is the length for 2.9XX AGI interpreter versions.
-            // 0x05DF is the length for 2.4XX AGI interpreter versions.
-            // 0x03DB is the length for 2.272 and 2.089 AGI interpreter versions.
-            // TODO: V3 saved games not yet covered.
             int saveVarsLength = GetSaveVariablesLength(state.Version);
             int aniObjsOffset = 33 + saveVarsLength;
             savedGameData[31] = (byte)(saveVarsLength & 0xFF);
@@ -507,6 +549,7 @@ namespace AGILE
 
             // [325] 356 - 555(200 or 160 bytes) ? Key to controller map (4 bytes each). Earlier versions had less entries.
             pos = 356;
+            int keyMapSize = GetNumberOfControllers(state.Version);
             foreach (var entry in state.KeyToControllerMap)
             {
                 if (entry.Key != 0)
@@ -520,17 +563,22 @@ namespace AGILE
                 }
             }
 
+            int postKeyMapOffset = 356 + (keyMapSize << 2);
+
             // [525] 556 - 1515(480 or 960 bytes) 12 or 24 strings, each 40 bytes long. For 2.4XX to 2.9XX, it was 24 strings.
-            for (int i = 0; i < Defines.NUMSTRINGS; i++)
+            int numOfStrings = GetNumberOfStrings(state.Version);
+            for (int i = 0; i < numOfStrings; i++)
             {
-                pos = 556 + (i * Defines.STRLENGTH);
+                pos = postKeyMapOffset + (i * Defines.STRLENGTH);
                 if ((state.Strings[i] != null) && (state.Strings[i].Length > 0)) {
                     foreach (byte b in Encoding.ASCII.GetBytes(state.Strings[i])) savedGameData[pos++] = b;
                 }
             }
 
+            int postStringsOffset = postKeyMapOffset + (numOfStrings * Defines.STRLENGTH);
+
             // [1485] 1516(2 bytes) Foreground colour
-            savedGameData[1516] = (byte)state.ForegroundColour;
+            savedGameData[postStringsOffset + 0] = (byte)state.ForegroundColour;
 
             // TODO: Need to fix the foreground and background colour storage.
 
@@ -542,33 +590,36 @@ namespace AGILE
             //int textAttribute = (savedGameData[postStringsOffset + 4] + (savedGameData[postStringsOffset + 5] << 8));
 
             // [1491] 1522(2 bytes) Accept input = 1, Prevent input = 0
-            savedGameData[1522] = (byte)(state.AcceptInput ? 1 : 0);
+            savedGameData[postStringsOffset + 6] = (byte)(state.AcceptInput ? 1 : 0);
 
             // [1493] 1524(2 bytes) User input row on the screen
-            savedGameData[1524] = (byte)state.InputLineRow;
+            savedGameData[postStringsOffset + 8] = (byte)state.InputLineRow;
 
             // [1495] 1526(2 bytes) Cursor character
-            savedGameData[1526] = (byte)state.CursorCharacter;
+            savedGameData[postStringsOffset + 10] = (byte)state.CursorCharacter;
 
             // [1497] 1528(2 bytes) Show status line = 1, Don't show status line = 0
-            savedGameData[1528] = (byte)(state.ShowStatusLine ? 1 : 0);
+            savedGameData[postStringsOffset + 12] = (byte)(state.ShowStatusLine ? 1 : 0);
 
             // [1499] 1530(2 bytes) Status line row on the screen
-            savedGameData[1530] = (byte)state.StatusLineRow;
+            savedGameData[postStringsOffset + 14] = (byte)state.StatusLineRow;
 
             // [1501] 1532(2 bytes) Picture top row on the screen
-            savedGameData[1532] = (byte)state.PictureRow;
+            savedGameData[postStringsOffset + 16] = (byte)state.PictureRow;
 
             // [1503] 1534(2 bytes) Picture bottom row on the screen
-            savedGameData[1534] = (byte)(state.PictureRow + 21);
+            savedGameData[postStringsOffset + 18] = (byte)(state.PictureRow + 21);
 
             // [1505] 1536(2 bytes) Stores a pushed position within the script event list
             // Note: Depends on interpreter version. 2.4xx and below didn't have push.script/pop.script, so they didn't have this saved game field.
-            if (aniObjsOffset > 1536)
+            if ((postStringsOffset + 20) < aniObjsOffset)
             {
                 // The spec is 2 bytes, but as with the fields above, there shouldn't be more than 255.
                 savedGameData[1536] = (byte)(state.ScriptBuffer.SavedScript);
             }
+
+            // Some AGI V3 versions have 3 additional bytes at this point.
+            // TODO: Work out what these 3 bytes are for and write them out here.
 
             // SECOND PIECE: ANIMATED OBJECT STATE
             // 1538 - 1539(2 bytes) Length of piece
@@ -838,7 +889,7 @@ namespace AGILE
             int scriptEntryCount = (savedGameData[354] + (savedGameData[355] << 8));
 
             // [325] 356 - 555(200 or 160 bytes) ? Key to controller map (4 bytes each)
-            int keyMapSize = (saveVarsLength < 1000 ? 40 : 50);   // TODO: This is a version check hack. Need a better way.
+            int keyMapSize = GetNumberOfControllers(state.Version);
             for (int i = 0; i < keyMapSize; i++)
             {
                 int keyMapOffset = i << 2;
@@ -855,11 +906,10 @@ namespace AGILE
                 }
             }
 
-            // For the saved game formats we support (2.4XX to 2.9XX), the keymap always starts at 356.
             int postKeyMapOffset = 356 + (keyMapSize << 2);
 
             // [525] 556 - 1515(480 or 960 bytes) 12 or 24 strings, each 40 bytes long
-            int numOfStrings = (saveVarsLength < 1000 ? 12 : 24);  // TODO: This is a version check hack. Need a better way.
+            int numOfStrings = GetNumberOfStrings(state.Version);
             for (int i = 0; i < numOfStrings; i++)
             {
                 int stringOffset = postKeyMapOffset + (i * Defines.STRLENGTH);
