@@ -17,7 +17,7 @@
 !define PRODUCT_FILE_NAME "AGILE" ; PRODUCT_NAME without Illegal File Name Characters
 !define SHORT_NAME "AGILE" ; Common abbreviated app name
 !define DOS_NAME "AGILE" ; Name to Conform to 8.3 Naming Convention
-!define RESOURCE_NAME "Misc\AGILE" ; Name of Folder for Resource Files
+!define RESOURCE_NAME "" ; Path to folder for resource files
 
 ; Add uninstaller info
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\AGILE.exe"
