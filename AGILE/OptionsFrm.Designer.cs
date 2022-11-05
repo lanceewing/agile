@@ -127,7 +127,7 @@ namespace AGILE
             this.textBox1.Size = new System.Drawing.Size(348, 48);
             this.textBox1.TabIndex = 1000;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "Select external XML editor for viewing your user config file.";
+            this.textBox1.Text = "Select external XML editor for viewing your user AGILE config file.";
             // 
             // browseXMLEditorBtn
             // 
