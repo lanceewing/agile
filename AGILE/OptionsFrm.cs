@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using Microsoft.Win32;
 using System.Reflection;
+using AGILE.Properties;
 
 namespace AGILE
 {
@@ -17,6 +18,7 @@ namespace AGILE
         //public static string assemblyPath = Path.GetDirectoryName(assemblyEXE).Replace("%20", " ");
         //public static string assemblyEXEName = Path.GetFileName(assemblyPath);
 
+        public static bool? useSystemXMLDefault = Properties.Settings.Default.useSystemXMLDefault;
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
         private static string currentXMLEditor = null;
         public static bool nullXML = false;
@@ -51,16 +53,23 @@ namespace AGILE
 
             #endregion Load Screen Metrics
 
-            systemXMLDefaultChkBox.Checked = Properties.Settings.Default.useSystemXMLDefault;
-
+            // Populate controls
             currentXMLEditor = Properties.Settings.Default.xmlEditor;
 
-            // Populate controls
-            if (File.Exists(Properties.Settings.Default.xmlEditor))
+            // Get if default XML editor is to be used
+            if (useSystemXMLDefault.HasValue)
+            {
+                systemXMLDefaultChkBox.Checked = Properties.Settings.Default.useSystemXMLDefault;
+                systemXMLDefaultChkBox_CheckedChanged(null, null);
+            }
+            else if (File.Exists(Properties.Settings.Default.xmlEditor))
             {
                 xmlEditor = Properties.Settings.Default.xmlEditor;
                 xmlEditorTxtBox.Text = xmlEditor;
             }
+
+            // Deselect text in xmlEditorTxtBox
+            xmlEditorTxtBox.Select(0, 0);
 
             // Get status of directory shellex 
             RegistryKey rkSubKey = Registry.ClassesRoot.OpenSubKey("Directory\\shell\\AGILE", false);
@@ -68,8 +77,6 @@ namespace AGILE
                 runInAgileChkBox.Checked = false;
             else
                 runInAgileChkBox.Checked = true;
-
-            xmlEditorTxtBox.Select(0, 0); ;
         }
 
         /// <summary>
@@ -98,6 +105,9 @@ namespace AGILE
         /// <param name="e"></param>
         private void systemXMLDefaultChkBox_CheckedChanged(object sender, EventArgs e)
         {
+            xmlEditorTxtBox.Enabled = !systemXMLDefaultChkBox.Checked;
+            browseXMLEditorBtn.Enabled = !systemXMLDefaultChkBox.Checked;
+
             try
             {
                 using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("xmlfile\\shell\\open\\command"))
