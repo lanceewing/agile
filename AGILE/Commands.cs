@@ -1639,7 +1639,8 @@ namespace AGILE
                             ShowPicture(false);
                             newRoom = state.CurrentRoom = state.Vars[Defines.CURROOM];
                             textGraphics.UpdateStatusLine();
-                            exit = true;
+                            // return 0 so we can start executing the beginning of Logic 0
+                            return 0;                            
                         }
                     }
                     break;

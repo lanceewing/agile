@@ -1,10 +1,6 @@
 ﻿using AGI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static AGI.Resource;
 
@@ -176,8 +172,18 @@ namespace AGILE
                 byte previousScore = state.Vars[Defines.SCORE];
                 bool soundStatus = state.Flags[Defines.SOUNDON];
 
-                // Continue scanning LOGIC 0 while the return value is above 0, indicating a room change.
-                while (NewRoom(commands.ExecuteLogic(0))) ;
+                // Continue scanning LOGIC 0 while NewRoom() return value is true, indicating a room change.
+                bool executeLogicLoop = true;
+                while (executeLogicLoop)
+                {
+                    executeLogicLoop = NewRoom(commands.ExecuteLogic(0));
+                    state.Vars[Defines.OBJHIT] = 0;
+                    state.Vars[Defines.OBJEDGE] = 0;
+                    state.Vars[Defines.UNKNOWN_WORD] = 0;
+                    state.Flags[Defines.INPUT] = false;
+                    previousScore = state.Vars[Defines.SCORE];
+                }
+
 
                 // Set ego's direction from the variable.
                 ego.Direction = state.Vars[Defines.EGODIR];
