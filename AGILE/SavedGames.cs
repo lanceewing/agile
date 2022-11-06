@@ -447,6 +447,19 @@ namespace AGILE
         }
 
         /// <summary>
+        /// Used to encrypt/decrypt the OBJECT section of the saved game file for AGI V3 games. Can't
+        /// reuse the Objects class to do the crypting, as the saved game encrypts it from a different
+        /// starting index, so the output is incompatible.
+        /// </summary>
+        /// <param name="data">The byte array to crypt part of.</param>
+        /// <param name="start">The start index to start crypting from.</param>
+        /// <param name="end">The end index (exclusive) to crypt to.</param>
+        private void Crypt(byte[] data, int start, int end)
+        {
+            for (int i=0, j=start; j<end;) data[j++] ^= (byte)"Avis Durgan"[i++ % 11];
+        }
+
+        /// <summary>
         /// Saves the GameState of the Interpreter to a saved game file.
         /// </summary>
         public void SaveGameState()
@@ -730,6 +743,13 @@ namespace AGILE
             savedGameData[objectsOffset + 0] = (byte)(objectsLength & 0xFF);
             savedGameData[objectsOffset + 1] = (byte)((objectsLength >> 8) & 0xFF);
             pos = objectsOffset + 2;
+            if (state.IsAGIV3)
+            {
+                // AGI V3 games xor encrypt the data with Avis Durgan. Note that unlike the OBJECT 
+                // file itself, the saved game OBJECT section crypts from index 3, since it does 
+                // not output the 3 byte header, so starts the crypting after that.
+                Crypt(objectData, 3, objectData.Length);
+            }
             for (int i=3; i<objectData.Length; i++)
             {
                 savedGameData[pos++] = objectData[i];
@@ -1080,6 +1100,11 @@ namespace AGILE
             // The NumOfAnimatedObjects, as stored in OBJECT, should be 1 less than the number of animated object slots
             // (due to add.to.pic slot), otherwise this number increments by 1 on every save followed by restore.
             state.Objects.NumOfAnimatedObjects = (byte)(numOfAniObjs - 1);
+            if (state.IsAGIV3)
+            {
+                // AGI V3 games xor encrypt the data with Avis Durgan.
+                Crypt(savedGameData, objectsOffset + 2, objectsOffset + objectsLength);
+            }
             int numOfObjects = (savedGameData[objectsOffset + 2] + (savedGameData[objectsOffset + 3] << 8)) / 3;
             // Set the saved room number of each Object. 
             for (int objectNum = 0, roomPos = objectsOffset + 4; objectNum < numOfObjects; objectNum++, roomPos += 3)
