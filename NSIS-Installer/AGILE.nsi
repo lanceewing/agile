@@ -142,7 +142,7 @@ Section "${PRODUCT_NAME}" SEC01 ;MainSection
   ${If} $AddShellEx == "1"
     WriteRegStr HKEY_CLASSES_ROOT "Directory\shell\Agile" "" "Run with Agile"
     WriteRegStr HKEY_CLASSES_ROOT "Directory\shell\Agile" "Icon" "$INSTDIR\Agile.exe"
-    WriteRegStr HKEY_CLASSES_ROOT "Directory\shell\Agile\command" "" "\$\"$INSTDIR\Agile.exe\$\" \$\"--working-dir\$\" \$\"%v.\$\""
+    WriteRegStr HKEY_CLASSES_ROOT "Directory\shell\AGILE\command" "" "$\"$INSTDIR\Agile.exe$\" $\"--working-dir$\" $\"%1$\""
   ${EndIf}
   
   ; Shortcuts -------------------------------------------------
