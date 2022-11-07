@@ -1,12 +1,5 @@
 ﻿using AGI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static AGI.Resource;
 
 namespace AGILE
 {
@@ -177,7 +170,14 @@ namespace AGILE
                 bool soundStatus = state.Flags[Defines.SOUNDON];
 
                 // Continue scanning LOGIC 0 while the return value is above 0, indicating a room change.
-                while (NewRoom(commands.ExecuteLogic(0))) ;
+                while (commands.ExecuteLogic(0))
+                {
+                    state.Vars[Defines.OBJHIT] = 0;
+                    state.Vars[Defines.OBJEDGE] = 0;
+                    state.Vars[Defines.UNKNOWN_WORD] = 0;
+                    state.Flags[Defines.INPUT] = false;
+                    previousScore = state.Vars[Defines.SCORE];
+                }
 
                 // Set ego's direction from the variable.
                 ego.Direction = state.Vars[Defines.EGODIR];
@@ -224,93 +224,6 @@ namespace AGILE
         public void ShutdownSound()
         {
             soundPlayer.Shutdown();
-        }
-
-        /// <summary>
-        /// If the room has changed, then performs all the necessary updates to vars, flags, 
-        /// animated objects, controllers, and other state to prepare for entry in to the 
-        /// next room. If the room hasn't changed, it returns false up front and does nothing
-        /// else.
-        /// </summary>
-        /// <param name="roomNum"></param>
-        /// <returns>true if the room has changed; otherwise false.</returns>
-        private bool NewRoom(byte roomNum)
-        {
-            // Has the room changed?
-            if (roomNum == state.CurrentRoom) return false;
-
-            // Simulate a slow room change if there is a text window open.
-            if (textGraphics.IsWindowOpen()) Thread.Sleep(1000);
-
-            // Turn off sound.
-            soundPlayer.Reset();
-
-            // Clear the script event buffer ready for next room.
-            state.ScriptBuffer.InitScript();
-            state.ScriptBuffer.ScriptOn();
-
-            // Resets the Logics, Views, Pictures and Sounds back to new room state.
-            state.ResetResources();
-
-            // Carry over ego's view number.
-            // TODO: For some reason in MH2, the ego View can be null at this point. Needs investigation to determine why.
-            if (ego.View != null)
-            {
-                state.Vars[Defines.CURRENT_EGO] = (byte)ego.View.Index;
-            }
-
-            // Reset state for all animated objects.
-            foreach (AnimatedObject aniObj in state.AnimatedObjects) aniObj.Reset();
-
-            // Current room logic is loaded automatically on room change and not directly by load.logic
-            Logic logic = state.Logics[roomNum];
-            logic.IsLoaded = true;
-            state.ScriptBuffer.AddScript(ScriptBuffer.ScriptBufferEventType.LoadLogic, logic.Index);
-
-            // If ego collided with a border, set his position in the new room to
-            // the appropriate edge of the screen.
-            switch (state.Vars[Defines.EGOEDGE])
-            {
-                case Defines.TOP:
-                    ego.Y = Defines.MAXY;
-                    break;
-
-                case Defines.RIGHT:
-                    ego.X = Defines.MINX;
-                    break;
-
-                case Defines.BOTTOM:
-                    ego.Y = Defines.HORIZON + 1;
-                    break;
-
-                case Defines.LEFT:
-                    ego.X = (short)(Defines.MAXX + 1 - ego.XSize);
-                    break;
-            }
-
-            // Change the room number. Note that some games, e.g. MH2, change the CURROOM VAR directly, 
-            // which is why we also track the CurrentRoom in a separate state variable. We can't rely
-            // on the AGI VAR that stores the current room.
-            state.Vars[Defines.PREVROOM] = state.Vars[Defines.CURROOM];
-            state.Vars[Defines.CURROOM] = state.CurrentRoom = roomNum;
-
-            // Set flags and vars as appropriate for a new room.
-            state.Vars[Defines.OBJHIT] = 0;
-            state.Vars[Defines.OBJEDGE] = 0;
-            state.Vars[Defines.UNKNOWN_WORD] = 0;
-            state.Vars[Defines.EGOEDGE] = 0;
-            state.Flags[Defines.INPUT] = false;
-            state.Flags[Defines.INITLOGS] = true;
-            state.UserControl = true;
-            state.Blocking = false;
-            state.Horizon = Defines.HORIZON;
-            state.ClearControllers();
-
-            // Draw the status line, if applicable.
-            textGraphics.UpdateStatusLine();
-
-            // Return true to indicate to the scan loop to rescan.
-            return true;
         }
 
         /// <summary>

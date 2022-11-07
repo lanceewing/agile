@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static AGI.Resource;
 using static AGI.Resource.Logic;
 
-using Math = System.Math;
 using Marshal = System.Runtime.InteropServices.Marshal;
 using static AGILE.ScriptBuffer;
-using System.Diagnostics;
 using System.Threading;
 
 namespace AGILE
@@ -589,10 +583,8 @@ namespace AGILE
         /// Executes the given Action command.
         /// </summary>
         /// <param name="action">The Action command to execute.</param>
-        /// <param name="newRoom"></param>
-        /// <param name="exit"></param>
-        /// <returns>The index of the next Action to execute.</returns>
-        private int ExecuteAction(Action action, ref byte newRoom, ref bool exit)
+        /// <returns>The index of the next Action to execute, or 0 to rescan logics from top, or -1 when at end of Logic.</returns>
+        private int ExecuteAction(Action action)
         {
             // Normally the next Action will be the next one in the Actions list, but this
             // can be overwritten by the If and Goto actions.
@@ -601,10 +593,7 @@ namespace AGILE
             switch (action.Operation.Opcode)
             {
                 case 0: // return
-                    {
-                        exit = true;
-                    }
-                    return 0;
+                    return -1;
 
                 case 1: // increment
                     {
@@ -731,17 +720,11 @@ namespace AGILE
                     break;
 
                 case 18: // new.room
-                    {
-                        newRoom = action.Operands[0].asByte();
-                        exit = true;
-                    }
+                    NewRoom(action.Operands[0].asByte());
                     return 0;
 
                 case 19: // new.room.v
-                    {
-                        newRoom = state.Vars[action.Operands[0].asByte()];
-                        exit = true;
-                    }
+                    NewRoom(state.Vars[action.Operands[0].asByte()]);
                     return 0;
 
                 case 20: // load.logics
@@ -772,9 +755,9 @@ namespace AGILE
 
                 case 22: // call
                     {
-                        if ((newRoom = ExecuteLogic(action.Operands[0].asByte())) != state.CurrentRoom)
+                        if (ExecuteLogic(action.Operands[0].asByte()))
                         {
-                            exit = true;
+                            // This means that a rescan from the top of Logic.0 should be done.
                             return 0;
                         }
                     }
@@ -782,9 +765,9 @@ namespace AGILE
 
                 case 23: // call.v
                     {
-                        if ((newRoom = ExecuteLogic(state.Vars[action.Operands[0].asByte()])) != state.CurrentRoom)
+                        if (ExecuteLogic(state.Vars[action.Operands[0].asByte()]))
                         {
-                            exit = true;
+                            // This means that a rescan from the top of Logic.0 should be done.
                             return 0;
                         }
                     }
@@ -1637,9 +1620,9 @@ namespace AGILE
                             menu.EnableAllMenus();
                             ReplayScriptEvents();
                             ShowPicture(false);
-                            newRoom = state.CurrentRoom = state.Vars[Defines.CURROOM];
+                            state.CurrentRoom = state.Vars[Defines.CURROOM];
                             textGraphics.UpdateStatusLine();
-                            exit = true;
+                            return 0;
                         }
                     }
                     break;
@@ -1659,8 +1642,7 @@ namespace AGILE
                             state.Flags[Defines.RESTART] = true;
                             menu.EnableAllMenus();
                             textGraphics.ClearLines(0, 24, 0);
-                            exit = true;
-                            newRoom = 0;
+                            return 0;
                         }
                     }
                     break;
@@ -2091,8 +2073,8 @@ namespace AGILE
         /// Executes the Logic identified by the given logic number.
         /// </summary>
         /// <param name="logicNum">The number of the Logic to execute.</param>
-        /// <returns>If new.room was invoked, the new room number; otherwise the current room number.</returns>
-        public byte ExecuteLogic(int logicNum)
+        /// <returns>true if logics should be rescanned from the top (i.e. top of Logic 0); otherwise false.</returns>
+        public bool ExecuteLogic(int logicNum)
         {
             // Remember the previous Logic number.
             int previousLogNum = state.CurrentLogNum;
@@ -2103,18 +2085,94 @@ namespace AGILE
             // Prepare to start executing the Logic.
             Logic logic = state.Logics[logicNum];
             int actionNum = state.ScanStart[logicNum];
-            byte newRoom = state.CurrentRoom;
-            bool exit = false;
 
             // Continually execute the Actions in the Logic until one of them tells us to exit.
-            do actionNum = ExecuteAction(logic.Actions[actionNum], ref newRoom, ref exit); while (!exit);
+            do actionNum = ExecuteAction(logic.Actions[actionNum]); while (actionNum > 0);
 
             // Restore the previous Logic number before we leave.
             state.CurrentLogNum = previousLogNum;
 
-            // If new.room was not one of the Actions executed, then newRoom will still have the current
-            // room value; otherwise it will have the number of the new room.
-            return newRoom;
+            // If ExecuteAction return 0, then it means that a newroom, restore or restart is 
+            // happening. In those cases, we need to immediately rescan logics from the top of Logic.0
+            return (actionNum == 0);
+        }
+
+        /// <summary>
+        /// Performs all the necessary updates to vars, flags, animated objects, controllers, 
+        /// and other state to prepare for entry in to the next room.
+        /// </summary>
+        /// <param name="roomNum"></param>
+        private void NewRoom(byte roomNum)
+        {
+            // Simulate a slow room change if there is a text window open.
+            if (textGraphics.IsWindowOpen()) Thread.Sleep(1000);
+
+            // Turn off sound.
+            soundPlayer.Reset();
+
+            // Clear the script event buffer ready for next room.
+            state.ScriptBuffer.InitScript();
+            state.ScriptBuffer.ScriptOn();
+
+            // Resets the Logics, Views, Pictures and Sounds back to new room state.
+            state.ResetResources();
+
+            // Carry over ego's view number.
+            // TODO: For some reason in MH2, the ego View can be null at this point. Needs investigation to determine why.
+            if (state.Ego.View != null)
+            {
+                state.Vars[Defines.CURRENT_EGO] = (byte)state.Ego.View.Index;
+            }
+
+            // Reset state for all animated objects.
+            foreach (AnimatedObject aniObj in state.AnimatedObjects) aniObj.Reset();
+
+            // Current room logic is loaded automatically on room change and not directly by load.logic
+            Logic logic = state.Logics[roomNum];
+            logic.IsLoaded = true;
+            state.ScriptBuffer.AddScript(ScriptBuffer.ScriptBufferEventType.LoadLogic, logic.Index);
+
+            // If ego collided with a border, set his position in the new room to
+            // the appropriate edge of the screen.
+            switch (state.Vars[Defines.EGOEDGE])
+            {
+                case Defines.TOP:
+                    state.Ego.Y = Defines.MAXY;
+                    break;
+
+                case Defines.RIGHT:
+                    state.Ego.X = Defines.MINX;
+                    break;
+
+                case Defines.BOTTOM:
+                    state.Ego.Y = Defines.HORIZON + 1;
+                    break;
+
+                case Defines.LEFT:
+                    state.Ego.X = (short)(Defines.MAXX + 1 - state.Ego.XSize);
+                    break;
+            }
+
+            // Change the room number. Note that some games, e.g. MH2, change the CURROOM VAR directly, 
+            // which is why we also track the CurrentRoom in a separate state variable. We can't rely
+            // on the AGI VAR that stores the current room.
+            state.Vars[Defines.PREVROOM] = state.Vars[Defines.CURROOM];
+            state.Vars[Defines.CURROOM] = state.CurrentRoom = roomNum;
+
+            // Set flags and vars as appropriate for a new room.
+            state.Vars[Defines.OBJHIT] = 0;
+            state.Vars[Defines.OBJEDGE] = 0;
+            state.Vars[Defines.UNKNOWN_WORD] = 0;
+            state.Vars[Defines.EGOEDGE] = 0;
+            state.Flags[Defines.INPUT] = false;
+            state.Flags[Defines.INITLOGS] = true;
+            state.UserControl = true;
+            state.Blocking = false;
+            state.Horizon = Defines.HORIZON;
+            state.ClearControllers();
+
+            // Draw the status line, if applicable.
+            textGraphics.UpdateStatusLine();
         }
     }
 }
