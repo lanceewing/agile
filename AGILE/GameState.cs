@@ -120,7 +120,6 @@ namespace AGILE
         public int MaxDrawn { get; set; }
         public int PriorityBase { get; set; }
         public string SimpleName { get; set; }
-        public byte CurrentRoom { get; set; }
         public bool MenuEnabled { get; set; }
         public bool MenuOpen { get; set; }
         public bool HoldKey { get; set; }
