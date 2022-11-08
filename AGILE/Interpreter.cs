@@ -169,7 +169,7 @@ namespace AGILE
                 byte previousScore = state.Vars[Defines.SCORE];
                 bool soundStatus = state.Flags[Defines.SOUNDON];
 
-                // Continue scanning LOGIC 0 while the return value is above 0, indicating a room change.
+                // Continue scanning LOGIC 0 while the return value is true (which is what indicates a rescan).
                 while (commands.ExecuteLogic(0))
                 {
                     state.Vars[Defines.OBJHIT] = 0;
