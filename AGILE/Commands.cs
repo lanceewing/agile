@@ -1620,7 +1620,6 @@ namespace AGILE
                             menu.EnableAllMenus();
                             ReplayScriptEvents();
                             ShowPicture(false);
-                            state.CurrentRoom = state.Vars[Defines.CURROOM];
                             textGraphics.UpdateStatusLine();
                             return 0;
                         }
@@ -2153,11 +2152,9 @@ namespace AGILE
                     break;
             }
 
-            // Change the room number. Note that some games, e.g. MH2, change the CURROOM VAR directly, 
-            // which is why we also track the CurrentRoom in a separate state variable. We can't rely
-            // on the AGI VAR that stores the current room.
+            // Change the room number.
             state.Vars[Defines.PREVROOM] = state.Vars[Defines.CURROOM];
-            state.Vars[Defines.CURROOM] = state.CurrentRoom = roomNum;
+            state.Vars[Defines.CURROOM] = roomNum;
 
             // Set flags and vars as appropriate for a new room.
             state.Vars[Defines.OBJHIT] = 0;
