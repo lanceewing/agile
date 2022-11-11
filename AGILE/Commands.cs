@@ -1682,7 +1682,7 @@ namespace AGILE
 
                 case 134: // quit
                     {
-                        int quitAction = action.Operands[0].asByte();
+                        int quitAction = (action.Operands.Count == 0 ? 1 : action.Operands[0].asByte());
                         if ((quitAction == 1) || textGraphics.WindowPrint("Press ENTER to quit.\nPress ESC to keep playing."))
                         {
                             soundPlayer.Shutdown();
