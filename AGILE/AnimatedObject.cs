@@ -1476,7 +1476,11 @@ namespace AGILE
                             if (colourIndex != transIndex)
                             {
                                 visualPixels[screenPos] = colourIndex;
-                                priorityPixels[screenPos] = this.Priority;
+                                //  Replace the priority pixel only if the existing one is not a special priority pixel (0, 1, 2)
+                                if (priorityIndex > 2)
+                                {
+                                    priorityPixels[screenPos] = this.Priority;
+                                }
                             }
                         }
                     }
