@@ -394,8 +394,7 @@ namespace AGILE
 
                     case ScriptBufferEventType.OverlayPic:
                         {
-                            Picture overlayPicture = state.Pictures[scriptBufferEvent.resourceNumber];
-                            state.CurrentPicture.Screen.DrawCommands(overlayPicture.CommandStack);
+                            OverlayPicture(scriptBufferEvent.resourceNumber);
                         }
                         break;
                 }
