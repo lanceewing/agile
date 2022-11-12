@@ -1450,14 +1450,17 @@ namespace AGILE
             int screenPos = (aniObjTop * 160) + this.X;
             int screenLineAdd = 160 - cellWidth;
 
-            int cellPos = 0;
-            int cellLineAdd = (cellBitmapData.Stride - cellWidth);
+            // Position within the cell pixels depends on whether it is mirrored or not.
+            bool mirrored = (this.Cel.IsMirrored && (this.Cel.MirrorOf != this.CurrentLoop));
+            int cellPos = (mirrored ? cellWidth - 1 : 0);
+            int cellXAdd = (mirrored ? -1 : 1);
+            int cellYAdd = (cellBitmapData.Stride + (mirrored ? (cellWidth) : -cellWidth));
 
             // Iterate over each of the pixels and decide if the priority screen allows the pixel
             // to be drawn or not when adding them in to the VisualPixels and PriorityPixels arrays. 
-            for (int y = 0; y < cellHeight; y++, screenPos += screenLineAdd, cellPos += cellLineAdd)
+            for (int y = 0; y < cellHeight; y++, screenPos += screenLineAdd, cellPos += cellYAdd)
             {
-                for (int x = 0; x < cellWidth; x++, screenPos++, cellPos++)
+                for (int x = 0; x < cellWidth; x++, screenPos++, cellPos += cellXAdd)
                 {
                     // Check that the pixel is within the bounds of the AGI picture area.
                     if (((aniObjTop + y) >= 0) && ((aniObjTop + y) < 168) && ((this.X + x) >= 0) && ((this.X + x) < 160))
