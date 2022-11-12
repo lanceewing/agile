@@ -29,8 +29,6 @@ namespace AGILE
         private Boolean fullScreen = false;
         private FormWindowState windowStateBeforeFullscreen;
 
-        private static bool nullXML = false;
-
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
 
         /// <summary>

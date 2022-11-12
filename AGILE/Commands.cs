@@ -117,7 +117,6 @@ namespace AGILE
             Picture picture = state.CurrentPicture;
 
             Bitmap visualBitmap = picture.Screen.VisualBitmap;
-            Bitmap priorityBitmap = picture.Screen.PriorityBitmap;
 
             // Copy visual pixels to a 160x168 byte array.
             BitmapData visualBitmapData = visualBitmap.LockBits(new Rectangle(0, 0, visualBitmap.Width, visualBitmap.Height), ImageLockMode.ReadWrite, visualBitmap.PixelFormat);
@@ -394,8 +393,7 @@ namespace AGILE
 
                     case ScriptBufferEventType.OverlayPic:
                         {
-                            Picture overlayPicture = state.Pictures[scriptBufferEvent.resourceNumber];
-                            state.CurrentPicture.Screen.DrawCommands(overlayPicture.CommandStack);
+                            OverlayPicture(scriptBufferEvent.resourceNumber);
                         }
                         break;
                 }
