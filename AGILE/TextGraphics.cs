@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AGILE
@@ -551,6 +550,9 @@ namespace AGILE
                 {
                     // If ENTER is hit, we break out of the loop and return the entered line of text.
                     while (userInput.Keys[(int)Keys.Enter]) { /* Wait until ENTER released */ }
+
+                    // Render Line without the cursor by replacing the cursor with empty string
+                    DrawString(this.pixels, line.ToString() + " ", col * 8, row * 8, foregroundColour, backgroundColour);
                     break;
                 }
                 else if (key == (int)Keys.Back)
