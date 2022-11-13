@@ -1,12 +1,14 @@
 using AGI;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using static AGI.Resource.Logic;
 
 namespace AGILE
 {
@@ -70,6 +72,9 @@ namespace AGILE
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
 
+            // Applies patch to the game to skip the starting question(s).
+            this.PatchGame(game, gameDetection.GameId);
+
             // Create the Interpreter to run this Game.
             this.interpreter = new Interpreter(game, userInput, screen.Pixels);
 
@@ -84,6 +89,64 @@ namespace AGILE
             this.stopWatch = Stopwatch.StartNew();
             this.lastTime = stopWatch.Elapsed;
             this.deltaTime = TimeSpan.Zero;
+        }
+
+        /// <summary>
+        /// Patches the given games's Logic scripts, so that the starting question is skipped.
+        /// </summary>
+        /// <param name="game">Game to patch the Logics for.</param>
+        /// <param name="gameId">The detected game ID.</param>
+        /// <returns>The patched Game.</returns>
+        private Game PatchGame(Game game, String gameId)
+        {
+            foreach (Volume volume in game.Volumes)
+            {
+                foreach (Resource resource in volume.Logics)
+                {
+                    Resource.Logic logic = (Resource.Logic)resource;
+                    List<Resource.Logic.Action> actions = logic.Actions;
+
+                    switch (gameId)
+                    {
+                        case "goldrush":
+                            if (resource.Index == 0)
+                            {
+                                // Changes the new.room(129) to be new.room(79) instead, thus skipping the questions.
+                                Resource.Logic.Action action = actions[38];
+                                if ((action.Operation.Opcode == 18) && (action.Operands[0].asInt() == 129))
+                                {
+                                    action.Operands[0] = new Resource.Logic.Operand(Resource.Logic.OperandType.NUM, 73);
+                                }
+                            }
+                            break;
+
+                        case "mh1":
+                            if (resource.Index == 159)
+                            {
+                                // Modifies LOGIC.159 to jump to the code that is run when a successful answer is entered.
+                                if ((actions[134].Operation.Opcode == 18) && (actions[134].Operands[0].asInt() == 153))
+                                {
+                                    actions[0] = new GotoAction(new List<Operand>() { new Operand(OperandType.ADDRESS, actions[132].Address) });
+                                    actions[0].Logic = logic;
+                                }
+                            }
+                            break;
+
+                        case "kq4":
+
+                            break;
+
+                        case "lsl1":
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            return game;
         }
 
         /// <summary>
