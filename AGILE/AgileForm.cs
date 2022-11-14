@@ -275,6 +275,8 @@ namespace AGILE
                         folderDialog.SelectedPath = !String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) ?
                                 Properties.Settings.Default.lastBrowsePath : gameFolder;
 
+                        ScrollSelectedPathIntoView();
+
                         DialogResult result = folderDialog.ShowDialog(Control.FromHandle(this.Handle));
                         if (result == DialogResult.OK)
                         {
@@ -293,6 +295,20 @@ namespace AGILE
             }
 
             return game;
+        }
+
+        /// <summary>
+        /// Sends the keys "down" and "up" to the application in a new async task. This is a workaround
+        /// for the issue where the FolderBrowserDialog sometimes does not scroll down to the 
+        /// selected path.
+        /// </summary>
+        private void ScrollSelectedPathIntoView()
+        {
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                SendKeys.SendWait("{DOWN}");
+                SendKeys.SendWait("{UP}");
+            });
         }
 
         /// <summary>
