@@ -137,7 +137,30 @@ namespace AGILE
                             break;
 
                         case "lsl1":
+                            if (resource.Index == 6)
+                            {
+                                // Modifies LOGIC.6 to jump to the code that is run when all of the trivia questions has been answered correctly.
+                                Resource.Logic.Action action = actions[0];                                
+                                // Verify that the action is the if-condition to check if the user can enter the game.
+                                if (action.Operation.Opcode == 255 && action.Operands.Count == 2)
+                                {
+                                    actions[0] = new GotoAction(new List<Operand>() { new Operand(OperandType.ADDRESS, actions[1].Address) });
+                                    actions[0].Logic = logic;
 
+                                    // Skips the 'Thank you. And now, slip into your leisure suit and prepare to enter the
+                                    // "Land of the Lounge Lizards" with "Leisure "Suit Larry!"' message
+                                    int printIndex = 9;
+                                    Resource.Logic.Action printAction = actions[printIndex];
+
+                                    // Verify it's the print function
+                                    if (printAction.Operation.Opcode == 101)
+                                    {
+                                        // Go to next command in the logic, which is the new.room command
+                                        actions[printIndex] = new GotoAction(new List<Operand>() { new Operand(OperandType.ADDRESS, actions[printIndex + 1].Address) });
+                                        actions[printIndex].Logic = logic;
+                                    }
+                                }                               
+                            }
                             break;
 
                         default:
