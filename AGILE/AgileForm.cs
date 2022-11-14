@@ -111,7 +111,7 @@ namespace AGILE
                         case "goldrush":
                             if (resource.Index == 0)
                             {
-                                // Changes the new.room(129) to be new.room(79) instead, thus skipping the questions.
+                                // Changes the new.room(129) to be new.room(73) instead, thus skipping the questions.
                                 Resource.Logic.Action action = actions[38];
                                 if ((action.Operation.Opcode == 18) && (action.Operands[0].asInt() == 129))
                                 {
