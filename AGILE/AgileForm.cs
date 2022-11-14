@@ -137,7 +137,17 @@ namespace AGILE
                             break;
 
                         case "lsl1":
-
+                            if (resource.Index == 6)
+                            {
+                                // Modifies LOGIC.6 to jump to the code that is run when all of the trivia questions has been answered correctly.
+                                Resource.Logic.Action action = actions[0];
+                                // Verify that the action is the if-condition to check if the user can enter the game.
+                                if (action.Operation.Opcode == 255 && action.Operands.Count == 2)
+                                {
+                                    actions[0] = new GotoAction(new List<Operand>() { new Operand(OperandType.ADDRESS, actions[1].Address) });
+                                    actions[0].Logic = logic;
+                                }                               
+                            }
                             break;
 
                         default:
