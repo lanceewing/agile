@@ -133,7 +133,15 @@ namespace AGILE
                             break;
 
                         case "kq4":
-
+                            if (resource.Index == 0)
+                            {
+                                // Changes the new.room(140) to be new.room(96) instead, thus skipping the questions.
+                                Resource.Logic.Action action = actions[55];
+                                if ((action.Operation.Opcode == 18) && (action.Operands[0].asInt() == 140))
+                                {
+                                    action.Operands[0] = new Resource.Logic.Operand(Resource.Logic.OperandType.NUM, 96);
+                                }
+                            }
                             break;
 
                         case "lsl1":
