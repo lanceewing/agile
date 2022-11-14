@@ -155,6 +155,7 @@ namespace AGILE
                                     // Verify it's the print function
                                     if (printAction.Operation.Opcode == 101)
                                     {
+                                        // Go to next command in the logic, which is the new.room command
                                         actions[printIndex] = new GotoAction(new List<Operand>() { new Operand(OperandType.ADDRESS, actions[printIndex + 1].Address) });
                                         actions[printIndex].Logic = logic;
                                     }
