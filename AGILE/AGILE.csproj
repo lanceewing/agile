@@ -102,6 +102,7 @@
       <DependentUpon>AgileForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AnimatedObject.cs" />
+    <Compile Include="FolderBrowserLauncher.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Defines.cs" />
     <Compile Include="Detection.cs" />
