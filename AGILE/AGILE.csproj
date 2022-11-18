@@ -106,6 +106,9 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Defines.cs" />
     <Compile Include="Detection.cs" />
+    <Compile Include="FolderSelectionDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GameScreen.cs">
       <SubType>Component</SubType>
     </Compile>

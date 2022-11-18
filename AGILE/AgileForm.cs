@@ -260,7 +260,7 @@ namespace AGILE
                 catch (Exception)
                 {
                     // There isn't an AGI game in the current folder, so ask player to choose a different folder.
-                    using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                    using (FolderSelectionDialog folderDialog = new FolderSelectionDialog())
                     {
                         prompt = "Please choose a folder containing an AGI game.";
 
@@ -275,7 +275,8 @@ namespace AGILE
                         folderDialog.SelectedPath = !String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) ?
                                 Properties.Settings.Default.lastBrowsePath : gameFolder;
 
-                        DialogResult result = FolderBrowserLauncher.ShowFolderBrowser(folderDialog, Control.FromHandle(this.Handle));
+                        DialogResult result = folderDialog.ShowDialog(Control.FromHandle(this.Handle));
+                        
                         if (result == DialogResult.OK)
                         {
                             Properties.Settings.Default.lastBrowsePath = folderDialog.SelectedPath;
