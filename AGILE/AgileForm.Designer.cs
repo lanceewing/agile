@@ -51,7 +51,7 @@ namespace AGILE
             this.cntxtMenuStretchMode});
             this.cntxtMenu.Name = "cntxtMenu";
             this.cntxtMenu.Size = new System.Drawing.Size(190, 136);
-            this.cntxtMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cntxtMenu_Opening);
+            this.cntxtMenu.Opening += new System.ComponentModel.CancelEventHandler(this.CntxtMenu_Opening);
             // 
             // cntxtMenuOpenUserConfig
             // 
@@ -59,14 +59,14 @@ namespace AGILE
             this.cntxtMenuOpenUserConfig.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuOpenUserConfig.Text = "Open User.&config";
             this.cntxtMenuOpenUserConfig.Visible = false;
-            this.cntxtMenuOpenUserConfig.Click += new System.EventHandler(this.cntxtMenuOpenUserConfig_Click);
+            this.cntxtMenuOpenUserConfig.Click += new System.EventHandler(this.CntxtMenuOpenUserConfig_Click);
             // 
             // cntxtMenuOptions
             // 
             this.cntxtMenuOptions.Name = "cntxtMenuOptions";
             this.cntxtMenuOptions.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuOptions.Text = "Open &Options";
-            this.cntxtMenuOptions.Click += new System.EventHandler(this.cntxtMenuOptions_Click);
+            this.cntxtMenuOptions.Click += new System.EventHandler(this.CntxtMenuOptions_Click);
             // 
             // cntxtMenuFullScreen
             // 
@@ -74,7 +74,7 @@ namespace AGILE
             this.cntxtMenuFullScreen.Name = "cntxtMenuFullScreen";
             this.cntxtMenuFullScreen.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuFullScreen.Text = "Full Screen";
-            this.cntxtMenuFullScreen.Click += new System.EventHandler(this.cntxtMenuFullScreen_Click);
+            this.cntxtMenuFullScreen.Click += new System.EventHandler(this.CntxtMenuFullScreen_Click);
             // 
             // cntxtMenuAspectCorrectionOn
             // 
@@ -82,7 +82,7 @@ namespace AGILE
             this.cntxtMenuAspectCorrectionOn.Name = "cntxtMenuAspectCorrectionOn";
             this.cntxtMenuAspectCorrectionOn.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuAspectCorrectionOn.Text = "Aspect Correction On";
-            this.cntxtMenuAspectCorrectionOn.Click += new System.EventHandler(this.cntxtMenuAspectCorrectionOn_Click);
+            this.cntxtMenuAspectCorrectionOn.Click += new System.EventHandler(this.CntxtMenuAspectCorrectionOn_Click);
             // 
             // cntxtMenuAspectCorrectionOff
             // 
@@ -92,7 +92,7 @@ namespace AGILE
             this.cntxtMenuAspectCorrectionOff.Name = "cntxtMenuAspectCorrectionOff";
             this.cntxtMenuAspectCorrectionOff.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuAspectCorrectionOff.Text = "Aspect Correction Off";
-            this.cntxtMenuAspectCorrectionOff.Click += new System.EventHandler(this.cntxtMenuAspectCorrectionOff_Click);
+            this.cntxtMenuAspectCorrectionOff.Click += new System.EventHandler(this.CntxtMenuAspectCorrectionOff_Click);
             // 
             // cntxtMenuStretchMode
             // 
@@ -100,7 +100,7 @@ namespace AGILE
             this.cntxtMenuStretchMode.Name = "cntxtMenuStretchMode";
             this.cntxtMenuStretchMode.Size = new System.Drawing.Size(189, 22);
             this.cntxtMenuStretchMode.Text = "Stretch Mode";
-            this.cntxtMenuStretchMode.Click += new System.EventHandler(this.cntxtMenuStretchMode_Click);
+            this.cntxtMenuStretchMode.Click += new System.EventHandler(this.CntxtMenuStretchMode_Click);
             // 
             // AgileForm
             // 
