@@ -53,7 +53,7 @@ namespace AGILE
             this.applyBtn.Text = "Apply";
             this.toolTip.SetToolTip(this.applyBtn, "Applies selected settings");
             this.applyBtn.UseVisualStyleBackColor = true;
-            this.applyBtn.Click += new System.EventHandler(this.applyBtn_Click);
+            this.applyBtn.Click += new System.EventHandler(this.ApplyBtn_Click);
             // 
             // okBtn
             // 
@@ -65,7 +65,7 @@ namespace AGILE
             this.okBtn.Text = "OK";
             this.toolTip.SetToolTip(this.okBtn, "Applies selected settings and cl;oses options form");
             this.okBtn.UseVisualStyleBackColor = true;
-            this.okBtn.Click += new System.EventHandler(this.okBtn_Click);
+            this.okBtn.Click += new System.EventHandler(this.OKBtn_Click);
             // 
             // cancelBtn
             // 
@@ -78,7 +78,7 @@ namespace AGILE
             this.cancelBtn.Text = "Cancel";
             this.toolTip.SetToolTip(this.cancelBtn, "Closes options form without appling any changes");
             this.cancelBtn.UseVisualStyleBackColor = true;
-            this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
+            this.cancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
             // xmlGrpBox
             // 
@@ -108,7 +108,7 @@ namespace AGILE
             this.systemXMLDefaultChkBox.TabIndex = 1040;
             this.systemXMLDefaultChkBox.Text = "Use system default";
             this.systemXMLDefaultChkBox.UseVisualStyleBackColor = true;
-            this.systemXMLDefaultChkBox.CheckedChanged += new System.EventHandler(this.systemXMLDefaultChkBox_CheckedChanged);
+            this.systemXMLDefaultChkBox.CheckedChanged += new System.EventHandler(this.SystemXMLDefaultChkBox_CheckedChanged);
             // 
             // textBox1
             // 
@@ -140,7 +140,7 @@ namespace AGILE
             this.browseXMLEditorBtn.Text = "...";
             this.toolTip.SetToolTip(this.browseXMLEditorBtn, "Browse to select default external XML editor");
             this.browseXMLEditorBtn.UseVisualStyleBackColor = true;
-            this.browseXMLEditorBtn.Click += new System.EventHandler(this.browseXMLEditorBtn_Click);
+            this.browseXMLEditorBtn.Click += new System.EventHandler(this.BrowseXMLEditorBtn_Click);
             // 
             // xmlEditorTxtBox
             // 
@@ -152,7 +152,7 @@ namespace AGILE
             this.xmlEditorTxtBox.Size = new System.Drawing.Size(315, 20);
             this.xmlEditorTxtBox.TabIndex = 1;
             this.toolTip.SetToolTip(this.xmlEditorTxtBox, "Sets path to preferred external XML editor");
-            this.xmlEditorTxtBox.TextChanged += new System.EventHandler(this.xmlEditorTxtBox_TextChanged);
+            this.xmlEditorTxtBox.TextChanged += new System.EventHandler(this.XMLEditorTxtBox_TextChanged);
             // 
             // runInAgileChkBox
             // 

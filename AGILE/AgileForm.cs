@@ -474,14 +474,14 @@ namespace AGILE
         /// Catches the context menu opening event
         ///     Can be used to alter context menu in real time
         /// </summary>
-        private void cntxtMenu_Opening(object sender, CancelEventArgs e) { }
+        private void CntxtMenu_Opening(object sender, CancelEventArgs e) { }
 
         /// <summary>
         /// Switch full screen
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cntxtMenuFullScreen_Click(object sender, EventArgs e)
+        private void CntxtMenuFullScreen_Click(object sender, EventArgs e)
         {
             ToggleFullscreen();
 
@@ -493,7 +493,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
+        private void CntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
             xmlEditor = Properties.Settings.Default.xmlEditor;
 
@@ -532,7 +532,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cntxtMenuOptions_Click(object sender, EventArgs e)
+        private void CntxtMenuOptions_Click(object sender, EventArgs e)
         {
             OptionsFrm optionsFrm = new OptionsFrm();
             optionsFrm.Show();
@@ -543,7 +543,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="
-        private void cntxtMenuAspectCorrectionOn_Click(object sender, EventArgs e)
+        private void CntxtMenuAspectCorrectionOn_Click(object sender, EventArgs e)
         {
             cntxtMenuStretchMode.Checked = false;
             cntxtMenuAspectCorrectionOff.Checked = false;
@@ -557,7 +557,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cntxtMenuAspectCorrectionOff_Click(object sender, EventArgs e)
+        private void CntxtMenuAspectCorrectionOff_Click(object sender, EventArgs e)
         {
             cntxtMenuStretchMode.Checked = false;
             cntxtMenuAspectCorrectionOff.Checked = true;
@@ -571,7 +571,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void cntxtMenuStretchMode_Click(object sender, EventArgs e)
+        private void CntxtMenuStretchMode_Click(object sender, EventArgs e)
         {
             cntxtMenuStretchMode.Checked = true;
             cntxtMenuAspectCorrectionOff.Checked = false;

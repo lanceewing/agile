@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using System.IO;
 using Microsoft.Win32;
 using System.Reflection;
-using AGILE.Properties;
 
 namespace AGILE
 {
@@ -14,16 +13,11 @@ namespace AGILE
     {
         #region Declares, Imports. etc.
 
-        //public static string assemblyEXE = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
-        //public static string assemblyPath = Path.GetDirectoryName(assemblyEXE).Replace("%20", " ");
-        //public static string assemblyEXEName = Path.GetFileName(assemblyPath);
-
         public static bool? useSystemXMLDefault = Properties.Settings.Default.useSystemXMLDefault;
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
         private static string currentXMLEditor = null;
         public static bool nullXML = false;
         public static bool nullCheckCancel = false;
-
         //AgileForm agileForm = (AgileForm)Application.OpenForms["AgileForm"];
 
         #endregion Declares, Imports. etc.
@@ -60,7 +54,7 @@ namespace AGILE
             if (useSystemXMLDefault.HasValue)
             {
                 systemXMLDefaultChkBox.Checked = Properties.Settings.Default.useSystemXMLDefault;
-                systemXMLDefaultChkBox_CheckedChanged(null, null);
+                SystemXMLDefaultChkBox_CheckedChanged(null, null);
             }
             else if (File.Exists(Properties.Settings.Default.xmlEditor))
             {
@@ -103,7 +97,7 @@ namespace AGILE
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void systemXMLDefaultChkBox_CheckedChanged(object sender, EventArgs e)
+        private void SystemXMLDefaultChkBox_CheckedChanged(object sender, EventArgs e)
         {
             xmlEditorTxtBox.Enabled = !systemXMLDefaultChkBox.Checked;
             browseXMLEditorBtn.Enabled = !systemXMLDefaultChkBox.Checked;
@@ -134,7 +128,7 @@ namespace AGILE
         /// <summary>
         /// Sets/displays path to selected XML editor
         /// </summary>
-        private void xmlEditorTxtBox_TextChanged(object sender, EventArgs e)
+        private void XMLEditorTxtBox_TextChanged(object sender, EventArgs e)
         {
             if (Directory.Exists(xmlEditorTxtBox.Text))
                 xmlEditor = xmlEditorTxtBox.Text;
@@ -143,7 +137,7 @@ namespace AGILE
         /// <summary>
         /// Opens browse dialog to select prefered XML editor
         /// </summary>
-        private void browseXMLEditorBtn_Click(object sender, EventArgs e)
+        private void BrowseXMLEditorBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDlg = new OpenFileDialog();
             openFileDlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
@@ -172,7 +166,7 @@ namespace AGILE
         /// <summary>
         /// Apply all settings and close form
         /// </summary>
-        private void okBtn_Click(object sender, EventArgs e)
+        private void OKBtn_Click(object sender, EventArgs e)
         {
             Apply();
 
@@ -189,7 +183,7 @@ namespace AGILE
         /// <summary>
         /// Close form without saving changes
         /// </summary>
-        private void cancelBtn_Click(object sender, EventArgs e)
+        private void CancelBtn_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -197,7 +191,7 @@ namespace AGILE
         /// <summary>
         /// Apply all settings and keep form open
         /// </summary>
-        private void applyBtn_Click(object sender, EventArgs e)
+        private void ApplyBtn_Click(object sender, EventArgs e)
         {
             Apply();
         }

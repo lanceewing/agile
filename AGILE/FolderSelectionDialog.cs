@@ -30,19 +30,12 @@ namespace AGILE
         /// Some of the messages that the Tree View control will respond to
         /// </summary>
         private const int TV_FIRST = 0x1100;
-        private const int TVM_SELECTITEM = (TV_FIRST + 11);
         private const int TVM_GETNEXTITEM = (TV_FIRST + 10);
-        private const int TVM_GETITEM = (TV_FIRST + 12);
         private const int TVM_ENSUREVISIBLE = (TV_FIRST + 20);
 
         /// <summary>
         /// Constants used to identity specific items in the Tree View control
         /// </summary>
-        private const int TVGN_ROOT = 0x0;
-        private const int TVGN_NEXT = 0x1;
-        private const int TVGN_CHILD = 0x4;
-        private const int TVGN_FIRSTVISIBLE = 0x5;
-        private const int TVGN_NEXTVISIBLE = 0x6;
         private const int TVGN_CARET = 0x9;
 
         // Fields
@@ -53,7 +46,6 @@ namespace AGILE
         private bool _selectedPathNeedsCheck;
         private bool _showNewFolderButton;
         private bool _showEditBox;
-        private bool _showBothFilesAndFolders;
         private bool _newStyle = true;
         private bool _showFullPathInEditBox = true;
         private bool _dontIncludeNetworkFoldersBelowDomainLevel;
@@ -78,44 +70,6 @@ namespace AGILE
         {
             this.Reset();
         }
-
-        // Factory Methods
-        public static FolderSelectionDialog PrinterBrowser()
-        {
-            FolderSelectionDialog x = new FolderSelectionDialog();
-            // avoid MBRO compiler warning when passing _rootFolderLocation as a ref:
-            x.BecomePrinterBrowser();
-            return x;
-        }
-
-        public static FolderSelectionDialog ComputerBrowser()
-        {
-            FolderSelectionDialog x = new FolderSelectionDialog();
-            // avoid MBRO compiler warning when passing _rootFolderLocation as a ref:
-            x.BecomeComputerBrowser();
-            return x;
-        }
-
-
-        // Helpers
-        private void BecomePrinterBrowser()
-        {
-            _uiFlags += BrowseFlags.BIF_BROWSEFORPRINTER;
-            Description = "Select a printer:";
-            PInvoke.Shell32.SHGetSpecialFolderLocation(IntPtr.Zero, CSIDL.PRINTERS, ref this._rootFolderLocation);
-            ShowNewFolderButton = false;
-            ShowEditBox = false;
-        }
-
-        private void BecomeComputerBrowser()
-        {
-            _uiFlags += BrowseFlags.BIF_BROWSEFORCOMPUTER;
-            Description = "Select a computer:";
-            PInvoke.Shell32.SHGetSpecialFolderLocation(IntPtr.Zero, CSIDL.NETWORK, ref this._rootFolderLocation);
-            ShowNewFolderButton = false;
-            ShowEditBox = false;
-        }
-
 
         private class CSIDL
         {
@@ -278,8 +232,6 @@ namespace AGILE
                 _uiFlags += BrowseFlags.BIF_NONEWFOLDERBUTTON;
             if (this._showEditBox)
                 _uiFlags += BrowseFlags.BIF_EDITBOX;
-            if (this._showBothFilesAndFolders)
-                _uiFlags += BrowseFlags.BIF_BROWSEINCLUDEFILES;
 
 
             if (Control.CheckForIllegalCrossThreadCalls && (Application.OleRequired() != ApartmentState.STA))
@@ -413,26 +365,6 @@ namespace AGILE
         }
 
         /// <summary>
-        /// Show an "edit box" in the folder browser.
-        /// </summary>
-        /// <remarks>
-        /// The "edit box" normally shows the name of the selected folder.  
-        /// The user may also type a pathname directly into the edit box.  
-        /// </remarks>
-        /// <seealso cref="ShowFullPathInEditBox"/>
-        public bool ShowEditBox
-        {
-            get
-            {
-                return this._showEditBox;
-            }
-            set
-            {
-                this._showEditBox = value;
-            }
-        }
-
-        /// <summary>
         /// Set whether to use the New Folder Browser dialog style.
         /// </summary>
         /// <remarks>
@@ -448,30 +380,6 @@ namespace AGILE
             {
                 this._newStyle = value;
             }
-        }
-
-        public bool DontIncludeNetworkFoldersBelowDomainLevel
-        {
-            get { return _dontIncludeNetworkFoldersBelowDomainLevel; }
-            set { _dontIncludeNetworkFoldersBelowDomainLevel = value; }
-        }
-
-        /// <summary>
-        /// Show the full path in the edit box as the user selects it. 
-        /// </summary>
-        /// <remarks>
-        /// This works only if ShowEditBox is also set to true. 
-        /// </remarks>
-        public bool ShowFullPathInEditBox
-        {
-            get { return _showFullPathInEditBox; }
-            set { _showFullPathInEditBox = value; }
-        }
-
-        public bool ShowBothFilesAndFolders
-        {
-            get { return _showBothFilesAndFolders; }
-            set { _showBothFilesAndFolders = value; }
         }
     }
 
