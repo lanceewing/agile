@@ -45,9 +45,7 @@ namespace AGILE
         private string _selectedPath;
         private bool _selectedPathNeedsCheck;
         private bool _showNewFolderButton;
-        private bool _showEditBox;
         private bool _newStyle = true;
-        private bool _showFullPathInEditBox = true;
         private bool _dontIncludeNetworkFoldersBelowDomainLevel;
         private int _uiFlags;
         private IntPtr _hwndEdit;
@@ -121,12 +119,6 @@ namespace AGILE
                     if (this._selectedPath.Length != 0)
                     {
                         PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_SETSELECTIONW, 1, this._selectedPath);
-                        if (this._showEditBox && this._showFullPathInEditBox)
-                        {
-                            // get handle to the Edit box inside the Folder Browser Dialog
-                            _hwndEdit = PInvoke.User32.FindWindowEx(new HandleRef(null, hwnd), IntPtr.Zero, "Edit", null);
-                            PInvoke.User32.SetWindowText(_hwndEdit, this._selectedPath);
-                        }
                     }
                     break;
 
@@ -152,12 +144,6 @@ namespace AGILE
                             // Maybe set the Edit Box text to the Full Folder path
                             if (haveValidPath && !String.IsNullOrEmpty(displayedPath))
                             {
-                                if (_showEditBox && _showFullPathInEditBox)
-                                {
-                                    if (_hwndEdit != IntPtr.Zero)
-                                        PInvoke.User32.SetWindowText(_hwndEdit, displayedPath);
-                                }
-
                                 if ((_uiFlags & BrowseFlags.BIF_STATUSTEXT) == BrowseFlags.BIF_STATUSTEXT)
                                     PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_SETSTATUSTEXT, 0, displayedPath);
                             }
@@ -200,7 +186,6 @@ namespace AGILE
             this._selectedPath = string.Empty;
             this._selectedPathNeedsCheck = false;
             this._showNewFolderButton = true;
-            this._showEditBox = true;
             this._newStyle = true;
             this._dontIncludeNetworkFoldersBelowDomainLevel = false;
             this._hwndEdit = IntPtr.Zero;
@@ -230,9 +215,6 @@ namespace AGILE
                 _uiFlags += BrowseFlags.BIF_NEWDIALOGSTYLE;
             if (!this._showNewFolderButton)
                 _uiFlags += BrowseFlags.BIF_NONEWFOLDERBUTTON;
-            if (this._showEditBox)
-                _uiFlags += BrowseFlags.BIF_EDITBOX;
-
 
             if (Control.CheckForIllegalCrossThreadCalls && (Application.OleRequired() != ApartmentState.STA))
             {
