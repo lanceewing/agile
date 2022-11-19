@@ -200,9 +200,12 @@ namespace AGILE
             TextGraphics textGraphics = new TextGraphics(screen.Pixels, null, null);
             try
             {
-                textGraphics.DrawString(screen.Pixels, "Loading... Please wait", 72, 88, 15, 0);
-                screen.Render();
-                this.Refresh();
+                if (File.Exists(gameFolder + "\\WORDS.TOK"))
+                {
+                    textGraphics.DrawString(screen.Pixels, "Loading... Please wait", 72, 88, 15, 0);
+                    screen.Render();
+                    this.Refresh();
+                }
                 return new AGI.Game(gameFolder);
             }
             finally
