@@ -14,6 +14,7 @@ namespace AGILE
         #region Declares, Imports. etc.
 
         public static bool? useSystemXMLDefault = Properties.Settings.Default.useSystemXMLDefault;
+        public static bool? patchGames = Properties.Settings.Default.patchGames;
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
         private static string currentXMLEditor = null;
         public static bool nullXML = false;
@@ -71,6 +72,12 @@ namespace AGILE
                 runInAgileChkBox.Checked = false;
             else
                 runInAgileChkBox.Checked = true;
+
+            // Get value of patchGames
+            if (patchGames.HasValue)
+            {
+                patchGameChkBox.Checked = Properties.Settings.Default.patchGames;
+            }
         }
 
         /// <summary>
@@ -260,6 +267,8 @@ namespace AGILE
             }
 
             #endregion Set directory context menu
+
+            Properties.Settings.Default.patchGames = patchGameChkBox.Checked;
 
             Properties.Settings.Default.Save();
 

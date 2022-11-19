@@ -118,5 +118,17 @@ namespace AGILE.Properties {
                 this["lastBrowsePath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool patchGames {
+            get {
+                return ((bool)(this["patchGames"]));
+            }
+            set {
+                this["patchGames"] = value;
+            }
+        }
     }
 }
