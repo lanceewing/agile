@@ -13,12 +13,6 @@ namespace AGILE
         private static readonly int MAX_PATH = 260;
 
         /// <summary>
-        /// Using title text to look for the top level dialog window is fragile.
-        /// In particular, this will fail in non-English applications.
-        /// </summary>
-        const string _topLevelSearchString = "Browse For Folder";
-
-        /// <summary>
         /// These should be robust.  We find the correct child controls in the dialog
         /// by using the GetDlgItem method, rather than the FindWindow(Ex) method,
         /// because the dialog item IDs should be constant.
@@ -149,21 +143,17 @@ namespace AGILE
                             }
                         }
                     }
-                    IntPtr hwndDlg = PInvoke.User32.FindWindow((string)null, _topLevelSearchString);
-                    if (hwndDlg != IntPtr.Zero)
+                    IntPtr hwndFolderCtrl = PInvoke.User32.GetDlgItem(hwnd, _dlgItemBrowseControl);
+                    if (hwndFolderCtrl != IntPtr.Zero)
                     {
-                        IntPtr hwndFolderCtrl = PInvoke.User32.GetDlgItem(hwndDlg, _dlgItemBrowseControl);
-                        if (hwndFolderCtrl != IntPtr.Zero)
-                        {
-                            IntPtr hwndTV = PInvoke.User32.GetDlgItem(hwndFolderCtrl, _dlgItemTreeView);
+                        IntPtr hwndTV = PInvoke.User32.GetDlgItem(hwndFolderCtrl, _dlgItemTreeView);
 
-                            if (hwndTV != IntPtr.Zero)
+                        if (hwndTV != IntPtr.Zero)
+                        {
+                            IntPtr item = PInvoke.User32.SendMessage(hwndTV, (uint)TVM_GETNEXTITEM, new IntPtr(TVGN_CARET), IntPtr.Zero);
+                            if (item != IntPtr.Zero)
                             {
-                                IntPtr item = PInvoke.User32.SendMessage(hwndTV, (uint)TVM_GETNEXTITEM, new IntPtr(TVGN_CARET), IntPtr.Zero);
-                                if (item != IntPtr.Zero)
-                                {
-                                    PInvoke.User32.SendMessage(hwndTV, TVM_ENSUREVISIBLE, IntPtr.Zero, item);
-                                }
+                                PInvoke.User32.SendMessage(hwndTV, TVM_ENSUREVISIBLE, IntPtr.Zero, item);
                             }
                         }
                     }
