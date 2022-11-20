@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using static AGI.Resource.Logic;
 
@@ -51,14 +52,14 @@ namespace AGILE
             this.Controls.Add(screen);
             this.Show();
             this.Activate();
-            this.StartGame(this.SelectGame(args));
+            this.StartGame(this.SelectGame(args), args);
         }
 
         /// <summary>
         /// Starts the given AGI Game.
         /// </summary>
         /// <param name="game">The Game from which we'll get all of the game data.</param>
-        private void StartGame(Game game)
+        private void StartGame(Game game, string[] args)
         {
             // Register the key event handlers for KeyUp, KeyDown, and KeyPress.
             UserInput userInput = new UserInput();
@@ -72,9 +73,12 @@ namespace AGILE
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
 
+            // Get patch game settings from UI / Application properties
             bool patchGameSetting = Properties.Settings.Default.patchGames;
+            // Get patch game settings from command line args
+            bool patchGameArg = args.Contains("--patch-game");
 
-            if (patchGameSetting)
+            if (patchGameSetting || patchGameArg)
             {
                 // Applies patch to the game to skip the starting question(s).
                 this.PatchGame(game, gameDetection.GameId);
