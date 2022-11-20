@@ -72,8 +72,13 @@ namespace AGILE
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
 
-            // Applies patch to the game to skip the starting question(s).
-            this.PatchGame(game, gameDetection.GameId);
+            bool patchGameSetting = Properties.Settings.Default.patchGames;
+
+            if (patchGameSetting)
+            {
+                // Applies patch to the game to skip the starting question(s).
+                this.PatchGame(game, gameDetection.GameId);
+            }
 
             // Create the Interpreter to run this Game.
             this.interpreter = new Interpreter(game, userInput, screen.Pixels);
