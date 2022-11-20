@@ -35,14 +35,12 @@ namespace AGILE
         // Fields
         private PInvoke.BrowseFolderCallbackProc _callback;
         private string _descriptionText;
-        private Environment.SpecialFolder _rootFolder;
         private string _selectedPath;
         private bool _selectedPathNeedsCheck;
         private bool _showNewFolderButton;
         private bool _newStyle = true;
         private bool _dontIncludeNetworkFoldersBelowDomainLevel;
         private int _uiFlags;
-        private IntPtr _hwndEdit;
         private IntPtr _rootFolderLocation;
 
         // Events
@@ -120,28 +118,12 @@ namespace AGILE
                     IntPtr pidl = lParam;
                     if (pidl != IntPtr.Zero)
                     {
-                        if (((_uiFlags & BrowseFlags.BIF_BROWSEFORPRINTER) == BrowseFlags.BIF_BROWSEFORPRINTER) ||
-                            ((_uiFlags & BrowseFlags.BIF_BROWSEFORCOMPUTER) == BrowseFlags.BIF_BROWSEFORCOMPUTER))
-                        {
-                            // we're browsing for a printer or computer, enable the OK button unconditionally.
-                            PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_ENABLEOK, 0, 1);
-                        }
-                        else
-                        {
-                            IntPtr pszPath = Marshal.AllocHGlobal(MAX_PATH * Marshal.SystemDefaultCharSize);
-                            bool haveValidPath = PInvoke.Shell32.SHGetPathFromIDList(pidl, pszPath);
-                            String displayedPath = Marshal.PtrToStringAuto(pszPath);
-                            Marshal.FreeHGlobal(pszPath);
-                            // whether to enable the OK button or not. (if file is valid)
-                            PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_ENABLEOK, 0, haveValidPath ? 1 : 0);
+                        IntPtr pszPath = Marshal.AllocHGlobal(MAX_PATH * Marshal.SystemDefaultCharSize);
+                        bool haveValidPath = PInvoke.Shell32.SHGetPathFromIDList(pidl, pszPath);
+                        Marshal.FreeHGlobal(pszPath);
+                        // whether to enable the OK button or not. (if file is valid)
+                        PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_ENABLEOK, 0, haveValidPath ? 1 : 0);
 
-                            // Maybe set the Edit Box text to the Full Folder path
-                            if (haveValidPath && !String.IsNullOrEmpty(displayedPath))
-                            {
-                                if ((_uiFlags & BrowseFlags.BIF_STATUSTEXT) == BrowseFlags.BIF_STATUSTEXT)
-                                    PInvoke.User32.SendMessage(new HandleRef(null, hwnd), BrowseForFolderMessages.BFFM_SETSTATUSTEXT, 0, displayedPath);
-                            }
-                        }
                     }
                     IntPtr hwndFolderCtrl = PInvoke.User32.GetDlgItem(hwnd, _dlgItemBrowseControl);
                     if (hwndFolderCtrl != IntPtr.Zero)
@@ -171,34 +153,18 @@ namespace AGILE
 
         public override void Reset()
         {
-            this._rootFolder = (Environment.SpecialFolder)0;
             this._descriptionText = string.Empty;
             this._selectedPath = string.Empty;
             this._selectedPathNeedsCheck = false;
             this._showNewFolderButton = true;
             this._newStyle = true;
             this._dontIncludeNetworkFoldersBelowDomainLevel = false;
-            this._hwndEdit = IntPtr.Zero;
             this._rootFolderLocation = IntPtr.Zero;
         }
 
         protected override bool RunDialog(IntPtr hWndOwner)
         {
             bool result = false;
-            if (_rootFolderLocation == IntPtr.Zero)
-            {
-                PInvoke.Shell32.SHGetSpecialFolderLocation(hWndOwner, (int)this._rootFolder, ref _rootFolderLocation);
-                if (_rootFolderLocation == IntPtr.Zero)
-                {
-                    PInvoke.Shell32.SHGetSpecialFolderLocation(hWndOwner, 0, ref _rootFolderLocation);
-                    if (_rootFolderLocation == IntPtr.Zero)
-                    {
-                        throw new InvalidOperationException("FolderBrowserDialogNoRootFolder");
-                    }
-                }
-            }
-            _hwndEdit = IntPtr.Zero;
-            //_uiFlags = 0;
             if (_dontIncludeNetworkFoldersBelowDomainLevel)
                 _uiFlags += BrowseFlags.BIF_DONTGOBELOWDOMAIN;
             if (this._newStyle)
@@ -219,7 +185,7 @@ namespace AGILE
                 hglobal = Marshal.AllocHGlobal(MAX_PATH * Marshal.SystemDefaultCharSize);
                 pszPath = Marshal.AllocHGlobal(MAX_PATH * Marshal.SystemDefaultCharSize);
                 this._callback = new PInvoke.BrowseFolderCallbackProc(this.FolderBrowserCallback);
-                browseInfo.pidlRoot = _rootFolderLocation;
+                browseInfo.pidlRoot = IntPtr.Zero;
                 browseInfo.Owner = hWndOwner;
                 browseInfo.pszDisplayName = hglobal;
                 browseInfo.Title = this._descriptionText;
@@ -281,22 +247,6 @@ namespace AGILE
             set
             {
                 this._descriptionText = (value == null) ? string.Empty : value;
-            }
-        }
-
-        public Environment.SpecialFolder RootFolder
-        {
-            get
-            {
-                return this._rootFolder;
-            }
-            set
-            {
-                if (!Enum.IsDefined(typeof(Environment.SpecialFolder), value))
-                {
-                    throw new InvalidEnumArgumentException("value", (int)value, typeof(Environment.SpecialFolder));
-                }
-                this._rootFolder = value;
             }
         }
 
@@ -373,12 +323,6 @@ namespace AGILE
             public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
 
             [DllImport("user32.dll", SetLastError = true)]
-            public static extern IntPtr FindWindowEx(HandleRef hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-
-            [DllImport("user32.dll", SetLastError = true)]
-            public static extern Boolean SetWindowText(IntPtr hWnd, String text);
-
-            [DllImport("user32.dll", SetLastError = true)]
             public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
             [DllImport("user32.dll")]
@@ -425,8 +369,6 @@ namespace AGILE
             public static extern int SHGetMalloc([Out, MarshalAs(UnmanagedType.LPArray)] PInvoke.IMalloc[] ppMalloc);
             [DllImport("shell32.dll", CharSet = CharSet.Auto)]
             public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
-            [DllImport("shell32.dll")]
-            public static extern int SHGetSpecialFolderLocation(IntPtr hwnd, int csidl, ref IntPtr ppidl);
         }
     }
 }
