@@ -174,7 +174,6 @@ namespace AGILE
             this.patchGameChkBox.TabIndex = 1040;
             this.patchGameChkBox.Text = "Patch Game (Skips questions in KQ4, LSL, MH1 and GR)";
             this.patchGameChkBox.UseVisualStyleBackColor = true;
-            this.patchGameChkBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // OptionsFrm
             // 

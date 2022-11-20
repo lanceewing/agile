@@ -14,6 +14,7 @@ namespace AGILE
         #region Declares, Imports. etc.
 
         public static bool? useSystemXMLDefault = Properties.Settings.Default.useSystemXMLDefault;
+        public static bool? patchGames = Properties.Settings.Default.patchGames;
         private static string xmlEditor = Properties.Settings.Default.xmlEditor;
         private static string currentXMLEditor = null;
         public static bool nullXML = false;
@@ -261,6 +262,8 @@ namespace AGILE
 
             #endregion Set directory context menu
 
+            Properties.Settings.Default.patchGames = patchGameChkBox.Checked;
+
             Properties.Settings.Default.Save();
 
             // Open user config if options was called from trying to open config without XML editor being specified
@@ -269,10 +272,5 @@ namespace AGILE
         }
 
         #endregion Extra Methods
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
