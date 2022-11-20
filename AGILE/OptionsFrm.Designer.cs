@@ -40,13 +40,14 @@ namespace AGILE
             this.xmlEditorTxtBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.runInAgileChkBox = new System.Windows.Forms.CheckBox();
+            this.patchGameChkBox = new System.Windows.Forms.CheckBox();
             this.xmlGrpBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // applyBtn
             // 
             this.applyBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.applyBtn.Location = new System.Drawing.Point(297, 141);
+            this.applyBtn.Location = new System.Drawing.Point(297, 176);
             this.applyBtn.Name = "applyBtn";
             this.applyBtn.Size = new System.Drawing.Size(75, 23);
             this.applyBtn.TabIndex = 1038;
@@ -58,7 +59,7 @@ namespace AGILE
             // okBtn
             // 
             this.okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okBtn.Location = new System.Drawing.Point(135, 141);
+            this.okBtn.Location = new System.Drawing.Point(135, 176);
             this.okBtn.Name = "okBtn";
             this.okBtn.Size = new System.Drawing.Size(75, 23);
             this.okBtn.TabIndex = 1036;
@@ -71,7 +72,7 @@ namespace AGILE
             // 
             this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(216, 141);
+            this.cancelBtn.Location = new System.Drawing.Point(216, 176);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(75, 23);
             this.cancelBtn.TabIndex = 1037;
@@ -164,12 +165,24 @@ namespace AGILE
             this.runInAgileChkBox.Text = "Add \"Run in Agile\" folder context menu item";
             this.runInAgileChkBox.UseVisualStyleBackColor = true;
             // 
+            // patchGameChkBox
+            // 
+            this.patchGameChkBox.AutoSize = true;
+            this.patchGameChkBox.Location = new System.Drawing.Point(18, 141);
+            this.patchGameChkBox.Name = "patchGameChkBox";
+            this.patchGameChkBox.Size = new System.Drawing.Size(297, 17);
+            this.patchGameChkBox.TabIndex = 1040;
+            this.patchGameChkBox.Text = "Patch Game (Skips questions in KQ4, LSL, MH1 and GR)";
+            this.patchGameChkBox.UseVisualStyleBackColor = true;
+            this.patchGameChkBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // OptionsFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelBtn;
-            this.ClientSize = new System.Drawing.Size(384, 176);
+            this.ClientSize = new System.Drawing.Size(384, 211);
+            this.Controls.Add(this.patchGameChkBox);
             this.Controls.Add(this.runInAgileChkBox);
             this.Controls.Add(this.xmlGrpBox);
             this.Controls.Add(this.applyBtn);
@@ -177,8 +190,8 @@ namespace AGILE
             this.Controls.Add(this.cancelBtn);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(400, 215);
-            this.MinimumSize = new System.Drawing.Size(400, 215);
+            this.MaximumSize = new System.Drawing.Size(400, 250);
+            this.MinimumSize = new System.Drawing.Size(400, 250);
             this.Name = "OptionsFrm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AGILE Options";
@@ -203,5 +216,6 @@ namespace AGILE
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.CheckBox runInAgileChkBox;
         private System.Windows.Forms.CheckBox systemXMLDefaultChkBox;
+        private System.Windows.Forms.CheckBox patchGameChkBox;
     }
 }

@@ -269,5 +269,10 @@ namespace AGILE
         }
 
         #endregion Extra Methods
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
