@@ -72,6 +72,12 @@ namespace AGILE
                 runInAgileChkBox.Checked = false;
             else
                 runInAgileChkBox.Checked = true;
+
+            // Get value of patchGames
+            if (patchGames.HasValue)
+            {
+                patchGameChkBox.Checked = Properties.Settings.Default.patchGames;
+            }
         }
 
         /// <summary>
