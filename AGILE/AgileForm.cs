@@ -282,7 +282,6 @@ namespace AGILE
                         }
 
                         folderDialog.ShowNewFolderButton = false;
-                        folderDialog.RootFolder = Environment.SpecialFolder.MyComputer;
                         folderDialog.Description = prompt;
                         folderDialog.SelectedPath = !String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) ?
                                 Properties.Settings.Default.lastBrowsePath : gameFolder;
