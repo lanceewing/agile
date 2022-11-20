@@ -61,12 +61,6 @@ namespace AGILE
             this.Reset();
         }
 
-        private class CSIDL
-        {
-            public const int PRINTERS = 4;
-            public const int NETWORK = 0x12;
-        }
-
         private class BrowseFlags
         {
             public const int BIF_DEFAULT = 0x0000;
