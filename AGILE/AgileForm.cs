@@ -1,4 +1,5 @@
 using AGI;
+using IWshRuntimeLibrary;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using static AGI.Resource.Logic;
 
@@ -21,6 +23,9 @@ namespace AGILE
     public partial class AgileForm : Form
     {
         #region Declares, Imports. etc.
+
+        public static string assemblyEXE = new System.Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+        public static string assemblyPath = Path.GetDirectoryName(assemblyEXE).Replace("%20", " ");
 
         private Interpreter interpreter;
         private GameScreen screen;
@@ -38,6 +43,12 @@ namespace AGILE
         /// The number of TimeSpan Ticks to achieve 60 times a second.
         /// </summary>
         private TimeSpan targetElaspedTime = TimeSpan.FromTicks(166667);
+
+        // Shortcut variables
+        private static string gameName = null;
+        private static string gameFolder = null;
+        private static string icoPath = null;
+        private static bool useIcon = false;
 
         #endregion Declares, Imports. etc.
 
@@ -72,6 +83,7 @@ namespace AGILE
             Detection gameDetection = new Detection(game);
             Version appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = $"AGILE v{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} | {gameDetection.GameName}";
+            gameName = gameDetection.GameName;
 
             // Get patch game settings from UI / Application properties
             bool patchGameSetting = Properties.Settings.Default.patchGames;
@@ -206,7 +218,7 @@ namespace AGILE
             TextGraphics textGraphics = new TextGraphics(screen.Pixels, null, null);
             try
             {
-                if (File.Exists(gameFolder + "\\WORDS.TOK"))
+                if (System.IO.File.Exists(gameFolder + "\\WORDS.TOK"))
                 {
                     textGraphics.DrawString(screen.Pixels, "Loading... Please wait", 72, 88, 15, 0);
                     screen.Render();
@@ -236,7 +248,7 @@ namespace AGILE
         {
             // Start by attempting to run with command line argument or the current folder.
             Boolean stillChoosingGame = true, firstTime = true;
-            string gameFolder = (args.Length > 0 ? args[0] : Directory.GetCurrentDirectory());
+            gameFolder = (args.Length > 0 ? args[0] : Directory.GetCurrentDirectory());
             AGI.Game game = null;
             string prompt = null;
 
@@ -291,6 +303,10 @@ namespace AGILE
                         folderDialog.Description = prompt;
                         folderDialog.SelectedPath = !String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) ?
                                 Properties.Settings.Default.lastBrowsePath : gameFolder;
+
+                        // Open to desktop if lastBrowsePath doesnot exist
+                        if (String.IsNullOrEmpty(Properties.Settings.Default.lastBrowsePath) || Properties.Settings.Default.lastBrowsePath == assemblyPath)
+                            folderDialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
                         DialogResult result = folderDialog.ShowDialog(Control.FromHandle(this.Handle));
                         
@@ -494,24 +510,16 @@ namespace AGILE
         private void CntxtMenu_Opening(object sender, CancelEventArgs e) { }
 
         /// <summary>
-        /// Switch full screen
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CntxtMenuFullScreen_Click(object sender, EventArgs e)
-        {
-            ToggleFullscreen();
-
-            cntxtMenuFullScreen.Checked = this.fullScreen;
-        }
-        
-        /// <summary>
         /// Opens config file for debugging
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CntxtMenuOpenUserConfig_Click(object sender, EventArgs e)
         {
+            //// Open config file folder
+            //Process.Start(Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath));
+            //    return;
+
             xmlEditor = Properties.Settings.Default.xmlEditor;
 
             string configFile = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath) + "\\user.config";
@@ -556,6 +564,18 @@ namespace AGILE
         }
 
         /// <summary>
+        /// Switch full screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CntxtMenuFullScreen_Click(object sender, EventArgs e)
+        {
+            ToggleFullscreen();
+
+            cntxtMenuFullScreen.Checked = this.fullScreen;
+        }
+
+        /// <summary>
         /// Turn aspect correctiion on
         /// </summary>
         /// <param name="sender"></param>
@@ -584,7 +604,7 @@ namespace AGILE
         }
 
         /// <summary>
-        /// 
+        /// Turn on strech mode
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -595,6 +615,33 @@ namespace AGILE
             cntxtMenuAspectCorrectionOn.Checked = false;
 
             AdjustGameScreen();
+        }
+
+        /// <summary>
+        /// Create Agile shortcut to current game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CntxtMenuCreateShortcut_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Would you like to select an icon for this shortcut?", "Creating a " + gameName + " shortcut", MessageBoxButtons.YesNoCancel);
+
+            if (result == DialogResult.Yes)
+            {
+                useIcon = true;
+                BrowseForIcon();
+            }
+            if (result == DialogResult.No)
+            {
+                useIcon = false;
+                icoPath = null;
+            }
+            if (result == DialogResult.Cancel)
+                return;
+
+            gameName = GetSafeName(gameName, "My AGI Game");
+            CreateShortcut(gameName, Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Assembly.GetExecutingAssembly().Location);
         }
 
         #endregion Context Menu
@@ -635,7 +682,7 @@ namespace AGILE
                             xmlEditor = obj.ToString().Split(new string[] { "\" /verb" }, StringSplitOptions.None)[0];
                             xmlEditor = xmlEditor.Split(new string[] { "\"" }, StringSplitOptions.None)[1];
 
-                            if (File.Exists(xmlEditor))
+                            if (System.IO.File.Exists(xmlEditor))
                             {
                                 Properties.Settings.Default.xmlEditor = xmlEditor;
                                 Properties.Settings.Default.Save();
@@ -645,6 +692,91 @@ namespace AGILE
                 }
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Selects icon for shortcut
+        /// </summary>
+        private static void BrowseForIcon()
+        {
+            OpenFileDialog openFileDlg = new OpenFileDialog();
+            openFileDlg.Title = "Select an Icon";
+            openFileDlg.CheckFileExists = true;
+            openFileDlg.CheckPathExists = true;
+            openFileDlg.ValidateNames = true;
+            openFileDlg.Multiselect = false;
+            openFileDlg.DefaultExt = "ico";
+            openFileDlg.Filter = "Icon Files|*.ICO|All Files|*.*";
+            openFileDlg.RestoreDirectory = true;
+
+            string lastIcoPath = Properties.Settings.Default.lastIcoPath;
+            if (Directory.Exists(lastIcoPath))
+                openFileDlg.InitialDirectory = lastIcoPath;
+            else
+                openFileDlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // Return if Cancel is pressed
+            if (openFileDlg.ShowDialog() == DialogResult.Cancel) return;
+
+            // Get selected icon
+            icoPath = openFileDlg.FileName;
+            Properties.Settings.Default.lastIcoPath = Path.GetDirectoryName(openFileDlg.FileName);
+            Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// Creates Agile destop icon for current game
+        /// </summary>
+        /// <param name="shortcutName">Name to be assigned to shortcut</param>
+        /// <param name="shortcutPath">game folder for shortcut argument</param>
+        /// <param name="targetFileLocation">Agile's path</param>
+        public static void CreateShortcut(string shortcutName, string shortcutPath, string targetFileLocation)
+        {
+            string shortcutLocation = Path.Combine(shortcutPath, shortcutName + ".lnk");
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+
+            shortcut.Description = "Start in AGILE";            // The description of the shortcut
+
+            if (useIcon == true)
+            {
+                if (System.IO.File.Exists(icoPath))
+                    shortcut.IconLocation = icoPath;            // The icon of the shortcut
+                else
+                    MessageBox.Show("Icon not found. No icon will be used.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            shortcut.TargetPath = targetFileLocation;           // The path of the file that will launch when the shortcut is run
+            shortcut.Arguments = "\"" + gameFolder + "\"";      // The path of the game folder to be used for Agile argument 
+            shortcut.Save();                                    // Save the shortcut
+        }
+
+        /// <summary>
+        /// Removes invalid characters from game name
+        /// </summary>
+        /// <param name="inName">Name to remove invalid path characters</param>
+        /// <param name="failName">Name to use if inName is void</param>
+        /// <returns>File System Safe Name</returns>
+        public static string GetSafeName(string inName, string failName) //, string outName)
+        {
+            // Remove ivalid Charsfile (system safe name)
+            if (!String.IsNullOrEmpty(inName))
+            {
+                inName = inName.Replace(":", "-");
+                inName = inName.Replace("*", "");
+                inName = inName.Replace("?", "");
+                inName = inName.Replace("/", "");
+                inName = inName.Replace(@"\", "");
+                inName = inName.Replace("|", "");
+                inName = inName.Replace("\"", "'");
+                inName = inName.Replace("<", "");
+                inName = inName.Replace(">", "");
+                return inName;
+            }
+            else
+            {
+                return inName = failName;
+            }
         }
 
         /// <summary>

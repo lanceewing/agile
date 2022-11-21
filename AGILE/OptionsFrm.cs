@@ -116,10 +116,14 @@ namespace AGILE
                     if (key != null)
                     {
                         Object o = key.GetValue("");
-                        string xml = key.GetValue("").ToString();
+                        string xml = null;
+                        if (o != null)
+                            xml = key.GetValue("").ToString();
                         if (!String.IsNullOrEmpty(xml))
+                        {
                             xml = xml.Replace("\"", null);
-                        xml = xml.Split(new string[] { @".exe" }, StringSplitOptions.None)[0] + ".exe";
+                            xml = xml.Split(new string[] { @".exe" }, StringSplitOptions.None)[0] + ".exe";
+                        }
                         if (File.Exists(xml))
                             xmlEditorTxtBox.Text = xml;
                         else
