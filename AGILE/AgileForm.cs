@@ -81,7 +81,7 @@ namespace AGILE
             if (patchGameSetting || patchGameArg)
             {
                 // Applies patch to the game to skip the starting question(s).
-                this.PatchGame(game, gameDetection.GameId);
+                this.PatchGame(game, gameDetection.GameId, gameDetection.GameName);
             }
 
             // Create the Interpreter to run this Game.
@@ -105,8 +105,9 @@ namespace AGILE
         /// </summary>
         /// <param name="game">Game to patch the Logics for.</param>
         /// <param name="gameId">The detected game ID.</param>
+        /// <param name="gameName">The detected game name.</param>
         /// <returns>The patched Game.</returns>
-        private Game PatchGame(Game game, String gameId)
+        private Game PatchGame(Game game, String gameId, String gameName)
         {
             foreach (Volume volume in game.Volumes)
             {
@@ -118,6 +119,11 @@ namespace AGILE
                     switch (gameId)
                     {
                         case "goldrush":
+                            // Gold Rush version 3.0 doesn't have copy protection
+                            if (gameName.Contains("3.0"))
+                            {
+                                break;      
+                            }
                             if (resource.Index == 0)
                             {
                                 // Changes the new.room(129) to be new.room(73) instead, thus skipping the questions.
