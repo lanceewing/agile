@@ -130,5 +130,17 @@ namespace AGILE.Properties {
                 this["patchGames"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastIcoPath {
+            get {
+                return ((string)(this["lastIcoPath"]));
+            }
+            set {
+                this["lastIcoPath"] = value;
+            }
+        }
     }
 }
