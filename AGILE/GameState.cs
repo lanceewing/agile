@@ -215,6 +215,7 @@ namespace AGILE
         /// </summary>
         public void Init()
         {
+            ClearStrings();
             ClearVars();
             Vars[Defines.MACHINE_TYPE] = 0;  // IBM PC
             Vars[Defines.MONITOR_TYPE] = 3;  // EGA
@@ -461,6 +462,17 @@ namespace AGILE
             for (int i = 0; i < Defines.NUMCONTROL; i++)
             {
                 Controllers[i] = false;
+            }
+        }
+
+        /// <summary>
+        /// Clears all of the AGI Strings to be empty.
+        /// </summary>
+        public void ClearStrings()
+        {
+            for (int i = 0; i < Defines.NUMSTRINGS; i++)
+            {
+                Strings[i] = "";
             }
         }
     }
