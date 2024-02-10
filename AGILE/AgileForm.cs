@@ -130,7 +130,7 @@ namespace AGILE
 
                     switch (gameId)
                     {
-                        case "goldrush":
+                        case "GR":
                             // Gold Rush version 3.0 doesn't have copy protection
                             if (gameName.Contains("3.0"))
                             {
@@ -147,7 +147,7 @@ namespace AGILE
                             }
                             break;
 
-                        case "mh1":
+                        case "MH1":
                             if (resource.Index == 159)
                             {
                                 // Modifies LOGIC.159 to jump to the code that is run when a successful answer is entered.
@@ -159,7 +159,7 @@ namespace AGILE
                             }
                             break;
 
-                        case "kq4":
+                        case "KQ4":
                             if (resource.Index == 0)
                             {
                                 // Changes the new.room(140) to be new.room(96) instead, thus skipping the questions.
@@ -171,7 +171,7 @@ namespace AGILE
                             }
                             break;
 
-                        case "lsl1":
+                        case "LLLLL":
                             if (resource.Index == 6)
                             {
                                 // Modifies LOGIC.6 to jump to the code that is run when all of the trivia questions has been answered correctly.
