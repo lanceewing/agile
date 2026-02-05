@@ -43,3 +43,4 @@ AGILE makes use of an AGILibrary written by various authors, but as the original
 ## History
 
 Back in the late 1990s, I wrote an AGI interpreter in C called MEKA. This interpreter was nearly complete but was a bit buggy. The functionality of MEKA was based primarily on the AGI specifications that I had helped create, which were based on reverse engineered info. Since then, large portions of Sierra's original AGI interpreter source code have been discovered, in the unused sectors of the original game disks bought by Sierra's customers (SQ2 v2.0D 720K disks). This has shed some light on the inner workings of the interpreter. AGILE has made use of the MEKA source, the AGI specifications, and the original AGI interpreter source code fragments to create something close to accurate.
+
