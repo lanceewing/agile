@@ -1,16 +1,23 @@
-name: Build AGILE
- 
+name: Upload Release Asset
+
 on:
   push:
-    branches: master
- 
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
-    
+
+    - name: Get release version
+      run: |
+          TAG=${{ github.ref_name }}
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
@@ -30,3 +37,9 @@ jobs:
 
     - name: Build the application
       run: DevEnv AGILE.sln /build Release
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ./AGILE-Installer/Release/*
