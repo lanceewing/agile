@@ -31,8 +31,8 @@ jobs:
     - name: Build the application
       run: DevEnv AGILE.sln /build Release
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: AGILE
-        path: "./AGILE-Installer/Release"
+        files: |
+          ./AGILE-Installer/Release/*
